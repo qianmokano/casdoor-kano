@@ -16,16 +16,16 @@ import * as React from "react";
 import {Navigate, Route, Routes, useLocation, useNavigate} from "react-router-dom";
 import {ConsoleDisabledPage} from "@/components/common/ConsoleDisabledPage";
 import {Loading} from "@/components/common/Loading";
-import {AppLayout} from "@/components/layout/AppLayout";
 import {useAccount} from "@/hooks/use-account";
 import * as Auth from "@/auth/Auth";
 import * as Conf from "@/Conf";
 import * as Setting from "@/lib/setting";
 import {isKanoCustomer} from "@/lib/kano";
+import KanoHomePage from "@/pages/KanoHomePage";
 
 // ---- console pages -----------------------------------------------------------
+const AppLayout = React.lazy(() => import("@/components/layout/AppLayout").then((module) => ({default: module.AppLayout})));
 const Dashboard = React.lazy(() => import("@/pages/Dashboard"));
-const KanoHomePage = React.lazy(() => import("@/pages/KanoHomePage"));
 const NotFoundPage = React.lazy(() => import("@/pages/NotFoundPage"));
 const AppListPage = React.lazy(() => import("@/pages/AppListPage"));
 const ShortcutsPage = React.lazy(() => import("@/pages/ShortcutsPage"));
@@ -219,10 +219,7 @@ function UserProfilePage() {
 
 function HomePage() {
   const {account, loading} = useAccount();
-  if (loading || account === undefined) {
-    return <Loading className="min-h-screen" />;
-  }
-  if (account === null) {
+  if (loading || !account) {
     return <KanoHomePage />;
   }
   if (isKanoCustomer(account)) {

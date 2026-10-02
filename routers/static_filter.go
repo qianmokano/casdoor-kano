@@ -292,7 +292,9 @@ func serveFileWithReplace(w http.ResponseWriter, r *http.Request, name string, o
 
 	oldContent := util.ReadStringFromPath(name)
 	newContent := oldContent
-	if organizationThemeCookie != nil {
+	if strings.HasSuffix(name, "index.html") && r.URL.Path == "/" {
+		newContent = kanoPublicIndexHtml(newContent)
+	} else if organizationThemeCookie != nil {
 		newContent = strings.ReplaceAll(newContent, "https://cdn.casbin.org/img/favicon.png", html.EscapeString(organizationThemeCookie.Favicon))
 		newContent = strings.ReplaceAll(newContent, "<title>Casdoor</title>", fmt.Sprintf("<title>%s</title>", html.EscapeString(organizationThemeCookie.DisplayName)))
 	}
@@ -308,6 +310,13 @@ func serveFileWithReplace(w http.ResponseWriter, r *http.Request, name string, o
 	newContent = strings.ReplaceAll(newContent, oldStaticBaseUrl, newStaticBaseUrl)
 
 	http.ServeContent(w, r, d.Name(), d.ModTime(), strings.NewReader(newContent))
+}
+
+func kanoPublicIndexHtml(content string) string {
+	content = strings.ReplaceAll(content, "https://cdn.casbin.org/img/favicon.png", "/kano/favicon.svg")
+	content = strings.ReplaceAll(content, "<title>Casdoor</title>", "<title>Kano 通行证 · 账户与安全</title>")
+	return strings.Replace(content, "</head>", `<link rel="preload" as="image" href="/kano/hero-768.webp" imagesrcset="/kano/hero-480.webp 480w, /kano/hero-768.webp 768w, /kano/hero-1280.webp 1280w" imagesizes="(max-width: 767px) 100vw, 560px" fetchpriority="high" />
+</head>`, 1)
 }
 
 type gzipResponseWriter struct {

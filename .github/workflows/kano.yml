@@ -30,6 +30,7 @@ jobs:
         run: |
           go test ./controllers ./object -tags skipCi -run 'Test(Kano|IsKano|CheckKano)' -coverprofile=coverage.out
           python3 deploy/check_coverage.py coverage.out
+          go test ./routers -tags skipCi -run TestKanoPublicIndexAssets
       - name: Install frontend dependencies
         working-directory: web
         run: yarn install --frozen-lockfile
