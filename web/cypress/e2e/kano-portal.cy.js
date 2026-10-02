@@ -59,6 +59,25 @@ function pressEnter() {
 }
 
 describe("Kano customer portal", () => {
+  it("renders the Chinese public home before a slow session query completes", () => {
+    fixture({signedIn: false});
+    cy.intercept({method: "GET", pathname: "/api/get-account"}, {
+      delay: 5000,
+      body: {status: "error", data: "Please login first"},
+    }).as("slowAccount");
+    cy.visit("/", {onBeforeLoad(window) { window.localStorage.clear(); }});
+    cy.contains("h1", "一个账户，连接 Kano 服务。", {timeout: 3000}).should("be.visible");
+    cy.wait("@slowAccount");
+    cy.contains("h1", "一个账户，连接 Kano 服务。").should("be.visible");
+  });
+
+  it("redirects an existing customer session from the public home to the account", () => {
+    fixture();
+    visit("/");
+    cy.location("pathname").should("eq", "/account");
+    cy.contains("h1", "账户与安全").should("be.visible");
+  });
+
   for (const width of [375, 768, 1440]) {
     it(`public home fits ${width}px and explains separate service sessions`, () => {
       fixture({signedIn: false});

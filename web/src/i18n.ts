@@ -16,6 +16,7 @@ import i18n from "i18next";
 import {initReactI18next} from "react-i18next";
 import * as Conf from "./Conf";
 import en from "./locales/en/data.json";
+import zh from "./locales/zh/data.json";
 
 // Load backend-provided frontend config before language detection runs.
 Conf.initConfigFromCookie();
@@ -35,6 +36,8 @@ function initLanguage(): string {
   if (language === undefined || language === null || language === "") {
     if (Conf.ForceLanguage !== "") {
       language = Conf.ForceLanguage;
+    } else if (window.location.pathname === "/") {
+      language = "zh";
     } else {
       const baseLanguage = navigator.language.split("-")[0];
       language = SupportedLanguages.includes(baseLanguage) ? baseLanguage : Conf.DefaultLanguage;
@@ -64,6 +67,8 @@ i18n
   .use(initReactI18next)
   .init({
     lng: initLanguage(),
+    resources: {en, zh},
+    partialBundledLanguages: true,
     ns: Object.keys(en),
     fallbackLng: "en",
     keySeparator: false,

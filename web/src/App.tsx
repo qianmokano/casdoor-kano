@@ -22,10 +22,10 @@ import * as Auth from "@/auth/Auth";
 import * as Conf from "@/Conf";
 import * as Setting from "@/lib/setting";
 import {isKanoCustomer} from "@/lib/kano";
+import KanoHomePage from "@/pages/KanoHomePage";
 
 // ---- console pages -----------------------------------------------------------
 const Dashboard = React.lazy(() => import("@/pages/Dashboard"));
-const KanoHomePage = React.lazy(() => import("@/pages/KanoHomePage"));
 const NotFoundPage = React.lazy(() => import("@/pages/NotFoundPage"));
 const AppListPage = React.lazy(() => import("@/pages/AppListPage"));
 const ShortcutsPage = React.lazy(() => import("@/pages/ShortcutsPage"));
@@ -219,10 +219,7 @@ function UserProfilePage() {
 
 function HomePage() {
   const {account, loading} = useAccount();
-  if (loading || account === undefined) {
-    return <Loading className="min-h-screen" />;
-  }
-  if (account === null) {
+  if (loading || !account) {
     return <KanoHomePage />;
   }
   if (isKanoCustomer(account)) {
