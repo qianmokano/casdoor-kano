@@ -1,0 +1,113 @@
+name: Kano portal
+
+on:
+  pull_request:
+    branches: [kano/main]
+  push:
+    branches: [kano/main]
+    tags: ['v4.13.0-kano.*']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  portal:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.25.8'
+          cache: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: yarn
+          cache-dependency-path: web/yarn.lock
+      - name: Test Kano policy and enforce coverage
+        run: |
+          go test ./controllers ./object -tags skipCi -run 'Test(Kano|IsKano|CheckKano)' -coverprofile=coverage.out
+          python3 deploy/check_coverage.py coverage.out
+      - name: Install frontend dependencies
+        working-directory: web
+        run: yarn install --frozen-lockfile
+      - name: Frontend checks and production build
+        working-directory: web
+        run: yarn typecheck && yarn lint && yarn build
+      - name: Build disposable SQLite instance
+        run: |
+          go build -o /tmp/kano-server .
+          mkdir -p /tmp/kano-portal/conf
+          sed 's/^httpport = .*/httpport = 8011/' conf/app.conf > /tmp/kano-portal/conf/app.conf
+      - name: Run real API regression tests
+        env:
+          driverName: sqlite
+          dataSourceName: 'file:/tmp/kano-portal/casdoor.db?_pragma=busy_timeout(5000)&_pragma=journal_mode(WAL)'
+          dbName: casdoor
+          origin: http://localhost:7001
+          originFrontend: http://localhost:7001
+          defaultLanguage: zh
+        run: |
+          export initDataFile="$GITHUB_WORKSPACE/init_data.json"
+          export frontendBaseDir="$GITHUB_WORKSPACE/web/build"
+          cd /tmp/kano-portal
+          /tmp/kano-server -config /tmp/kano-portal/conf/app.conf > /tmp/kano-server.log 2>&1 &
+          cd "$GITHUB_WORKSPACE"
+          for i in {1..60}; do
+            if curl -fsS http://localhost:8011/.well-known/openid-configuration > /dev/null; then break; fi
+            sleep 1
+          done
+          python3 deploy/test_portal.py
+      - uses: cypress-io/github-action@v6
+        env:
+          CASDOOR_BACKEND: http://localhost:8011
+        with:
+          working-directory: web
+          install: false
+          start: yarn start
+          wait-on: http://localhost:7001
+          browser: chrome
+          spec: cypress/e2e/kano-portal.cy.js,cypress/e2e/login.cy.js
+      - name: Save test evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: kano-portal-evidence
+          path: |
+            coverage.out
+            web/cypress/screenshots
+            /tmp/kano-server.log
+
+  image:
+    if: startsWith(github.ref, 'refs/tags/v4.13.0-kano.')
+    needs: portal
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-qemu-action@v3
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile
+          target: STANDARD
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ghcr.io/qianmokano/casdoor-kano:${{ github.ref_name }}
+          labels: |
+            org.opencontainers.image.source=https://github.com/qianmokano/casdoor-kano
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.version=${{ github.ref_name }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
