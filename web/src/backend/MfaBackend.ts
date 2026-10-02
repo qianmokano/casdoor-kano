@@ -62,6 +62,11 @@ export function DeleteMfa(values) {
   const formData = new FormData();
   formData.append("owner", values.owner);
   formData.append("name", values.name);
+  for (const key of ["password", "mfaType", "passcode", "recoveryCode"]) {
+    if (values[key]) {
+      formData.append(key, values[key]);
+    }
+  }
   return fetch(`${Setting.ServerUrl}/api/delete-mfa`, {
     method: "POST",
     credentials: "include",

@@ -58,6 +58,20 @@ export function updateUser(owner, name, user) {
   }).then(res => res.json());
 }
 
+/** Update independent profile fields without resubmitting credentials or identity data. */
+export function updateUserFields(owner: string, name: string, fields: Record<string, string>) {
+  const columns = Object.keys(fields).join(",");
+  return fetch(`${Setting.ServerUrl}/api/update-user?id=${encodeURIComponent(owner)}/${encodeURIComponent(name)}&columns=${encodeURIComponent(columns)}`, {
+    method: "POST",
+    credentials: "include",
+    body: JSON.stringify(fields),
+    headers: {
+      "Content-Type": "application/json",
+      "Accept-Language": Setting.getAcceptLanguage(),
+    },
+  }).then(res => res.json());
+}
+
 export function addUser(user) {
   const newUser = Setting.deepCopy(user);
   return fetch(`${Setting.ServerUrl}/api/add-user`, {

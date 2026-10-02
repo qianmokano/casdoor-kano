@@ -319,6 +319,10 @@ func (c *ApiController) UpdateUser() {
 		c.ResponseError(fmt.Sprintf(c.T("general:The user: %s doesn't exist"), id))
 		return
 	}
+	if !c.IsAdminOrSelf(oldUser) {
+		c.ResponseError(c.T("auth:Unauthorized operation"))
+		return
+	}
 
 	if columnsStr != "" {
 		mergedUser := *oldUser
@@ -327,6 +331,10 @@ func (c *ApiController) UpdateUser() {
 			return
 		}
 		user = mergedUser
+	}
+	if err := object.CheckKanoProfileUpdate(oldUser, &user, c.IsAdminOf(oldUser)); err != nil {
+		c.ResponseError(err.Error())
+		return
 	}
 
 	if oldUser.Owner == "built-in" && oldUser.Name == "admin" && (user.Owner != "built-in" || user.Name != "admin") {
@@ -376,6 +384,20 @@ func (c *ApiController) UpdateUser() {
 			if len(columns) == 0 {
 				c.ResponseError(c.T("auth:Unauthorized operation"))
 				return
+			}
+		}
+	}
+	if object.IsKanoCustomer(oldUser) && !c.IsAdminOf(oldUser) {
+		// Only the portal's non-credential fields can be updated through this API.
+		// MFA, passwords and identity changes use their dedicated verified flows.
+		if columnsStr == "" {
+			columns = []string{"display_name", "avatar", "language"}
+		} else {
+			for _, column := range columns {
+				if column != "display_name" && column != "avatar" && column != "language" {
+					c.ResponseError(c.T("auth:Unauthorized operation"))
+					return
+				}
 			}
 		}
 	}
@@ -739,6 +761,14 @@ func (c *ApiController) CheckUserPassword() {
 		c.ResponseError(err.Error())
 		return
 	}
+	if user.Owner == "kano" {
+		target, getErr := object.GetUser(user.GetId())
+		if getErr != nil || target == nil || !c.IsAdminOrSelf(target) {
+			c.ResponseError(c.T("auth:Unauthorized operation"))
+			return
+		}
+		user.Ldap = target.Ldap
+	}
 
 	/*
 	 * Verified password with user as subject, if field ldap not empty,
@@ -748,6 +778,9 @@ func (c *ApiController) CheckUserPassword() {
 	if err != nil {
 		c.ResponseError(err.Error())
 	} else {
+		if user.Owner == "kano" && c.GetSessionUsername() == user.GetId() {
+			c.recordKanoMfaPassword(&user)
+		}
 		c.ResponseOk()
 	}
 }

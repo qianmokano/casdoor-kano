@@ -16,6 +16,9 @@ import {useIsMobile} from "@/hooks/use-mobile";
 import {useIsDark} from "@/hooks/use-theme";
 import * as Setting from "@/lib/setting";
 import {cn} from "@/lib/utils";
+import {useTranslation} from "react-i18next";
+import {KanoHero, KanoLayout} from "@/components/kano/KanoLayout";
+import {isKanoApplication} from "@/lib/kano";
 
 const PHONE_QUERY = "(max-width: 639.98px)";
 
@@ -172,6 +175,7 @@ export function AuthLayout({
   footer,
   preview,
 }: AuthLayoutProps) {
+  const {t} = useTranslation("kano");
   useApplicationTheme(application, !preview);
   // an application can force the dark palette regardless of the visitor's own
   // preference, and the logo has to follow the palette that is actually painted
@@ -223,6 +227,17 @@ export function AuthLayout({
     [isDark && !panelIsLight ? "dark" : "light"],
   );
   const footerHtml = application?.footerHtml || cookieChrome.footerHtml;
+
+  if (!preview && isKanoApplication(application)) {
+    return (
+      <KanoLayout application={application}>
+        <div className="kano-container kano-auth kano-appear">
+          <aside className="kano-auth-aside"><p className="kano-eyebrow">KANO PASSPORT</p><h1>{t("One account. Connected to Kano.")}</h1><p>{t("A single place for your identity, password and account security. Simple to use, always yours.")}</p><KanoHero /></aside>
+          <div><div className="kano-auth-panel"><div className={cn("login-form", className)}>{onBack ? <Button type="button" variant="ghost" size="iconSm" className="mb-2" aria-label={i18next.t("general:Back")} onClick={onBack}><ArrowLeft /></Button> : null}{children}</div></div>{footer ? <div className="kano-auth-footer">{footer}</div> : null}</div>
+        </div>
+      </KanoLayout>
+    );
+  }
 
   return (
     <div

@@ -1446,6 +1446,7 @@ func (c *ApiController) Login() {
 		}
 
 		resp = c.HandleLoggedIn(application, user, &authForm)
+		c.recordKanoMfaRecovery(user, authForm.RecoveryCode)
 		c.setMfaUserSession("")
 
 		c.Ctx.Input.SetParam("recordUserId", user.GetId())

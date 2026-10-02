@@ -21,6 +21,8 @@ import {useAccount} from "@/hooks/use-account";
 import * as ApplicationBackend from "@/backend/ApplicationBackend";
 import * as MfaBackend from "@/backend/MfaBackend";
 import * as Setting from "@/lib/setting";
+import {isKanoCustomer} from "@/lib/kano";
+import {useTranslation} from "react-i18next";
 
 const MFA_TYPE_LABELS: {type: string; labelKey: string}[] = [
   {type: SmsMfaType, labelKey: "mfa:Use SMS"},
@@ -45,17 +47,19 @@ function getRequiredMfaType(account: any) {
  */
 export default function MfaSetupPage() {
   const {account, reload} = useAccount();
+  const {t} = useTranslation("kano");
+  const kano = isKanoCustomer(account);
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
 
   // Coming from a "RequiredMfa" sign-in the password was just entered, so skip step 1.
-  const cameFromLogin = (location.state as any)?.from !== undefined;
+  const cameFromLogin = !kano && (location.state as any)?.from !== undefined;
   const [current, setCurrent] = React.useState(cameFromLogin ? 1 : 0);
   // A "RequiredMfa" sign-in lands here without a "mfaType", so fall back to the
   // required factor: plain SMS would ask for a phone code the organization never asked for.
   const [mfaType, setMfaType] = React.useState(
-    () => searchParams.get("mfaType") ?? getRequiredMfaType(account) ?? SmsMfaType,
+    () => kano ? TotpMfaType : searchParams.get("mfaType") ?? getRequiredMfaType(account) ?? SmsMfaType,
   );
   const [application, setApplication] = React.useState<any>(undefined);
   const [applicationError, setApplicationError] = React.useState<string | null>(null);
@@ -95,14 +99,19 @@ export default function MfaSetupPage() {
     if (!account) {
       return;
     }
+    setApplicationError(null);
     setInitiating(true);
     MfaBackend.MfaSetupInitiate({mfaType, ...account})
       .then((res: any) => {
         if (res.status === "ok") {
           setMfaProps(res.data);
         } else {
+          setApplicationError(res.msg || i18next.t("mfa:Failed to initiate MFA"));
           Setting.showMessage("error", i18next.t("mfa:Failed to initiate MFA"));
         }
+      })
+      .catch(() => {
+        setApplicationError(i18next.t("general:Failed to connect to server"));
       })
       .finally(() => setInitiating(false));
   }, [account, mfaType]);
@@ -174,7 +183,7 @@ export default function MfaSetupPage() {
               Setting.showMessage("error", `${i18next.t("general:Failed to verify")}: ${res.msg}`)
             }
           />
-          {!cameFromLogin ? (
+          {!cameFromLogin && !kano ? (
             <div className="flex flex-wrap justify-center gap-1">
               {MFA_TYPE_LABELS.filter((item) => item.type !== mfaType).map((item) => (
                 <Button key={item.type} variant="link" size="sm" onClick={() => switchMfaType(item.type)}>
@@ -194,6 +203,7 @@ export default function MfaSetupPage() {
           recoveryCodes={mfaProps?.recoveryCodes}
           dest={verified.dest}
           countryCode={verified.countryCode}
+          requireRecoveryAcknowledgment={kano}
           onSuccess={() => {
             Setting.showMessage("success", i18next.t("general:Enabled successfully"));
             reload();
@@ -215,10 +225,10 @@ export default function MfaSetupPage() {
   };
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6 py-6">
+    <div className={kano ? "kano-container kano-account space-y-6" : "mx-auto max-w-2xl space-y-6 py-6"}>
       <div className="space-y-2 text-center">
         <h1 className="text-2xl font-semibold tracking-tight">
-          {i18next.t("mfa:Protect your account with Multi-factor authentication")}
+          {kano ? t("Set up your authenticator") : i18next.t("mfa:Protect your account with Multi-factor authentication")}
         </h1>
         <p className="text-sm text-muted-foreground">
           {i18next.t(
@@ -240,6 +250,7 @@ export default function MfaSetupPage() {
       <Card>
         <CardContent className="pt-6">{renderStep()}</CardContent>
       </Card>
+      {kano ? <div className="flex justify-center gap-3"><Button variant="outline" onClick={() => navigate("/account")}>{t("Back to account")}</Button>{current > 0 ? <Button variant="ghost" onClick={() => { setCurrent(0); setMfaProps(null); setVerified({}); setApplicationError(null); }}>{t("Restart setup")}</Button> : null}</div> : null}
     </div>
   );
 }

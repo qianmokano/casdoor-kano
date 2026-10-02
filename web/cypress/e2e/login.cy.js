@@ -20,7 +20,7 @@ describe("Login test", () => {
   });
 
   it("ui Login succeeded", () => {
-    cy.visit("/");
+    cy.visit("/login/built-in");
     cy.get(selector.username).type("admin");
     cy.get(selector.password).type("123");
     cy.get(selector.loginButton).click();
@@ -34,10 +34,10 @@ describe("Login test", () => {
   });
 
   it("ui Login failed", () => {
-    cy.visit("/");
+    cy.visit("/login/built-in");
     cy.get(selector.username).type("admin");
     cy.get(selector.password).type("1234");
     cy.get(selector.loginButton).click();
-    cy.location("pathname").should("eq", "/login");
+    cy.location("pathname").should("eq", "/login/built-in");
   });
 });
