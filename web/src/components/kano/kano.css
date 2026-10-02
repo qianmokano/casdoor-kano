@@ -23,7 +23,7 @@ html[data-kano-portal], .kano-portal {
 .kano-container { width: min(1120px, calc(100% - 64px)); margin-inline: auto; }
 .kano-header { display: flex; justify-content: space-between; align-items: center; min-height: 100px; gap: 24px; }
 .kano-brand { display: flex; align-items: center; gap: 12px; font-size: 20px; font-weight: 600; letter-spacing: -.7px; white-space: nowrap; }
-.kano-brand-image { width: 40px; height: 34px; flex-shrink: 0; object-fit: contain; }
+.kano-brand-image { width: 32px; height: 32px; flex-shrink: 0; object-fit: contain; }
 .kano-brand-subtitle { font-size: 16px; margin-left: 3px; font-weight: 400; }
 .kano-nav { display: flex; align-items: center; gap: 24px; font-size: 13px; }
 .kano-nav-login { border: 1px solid #d6d5cf; border-radius: 999px; padding: 9px 20px; }

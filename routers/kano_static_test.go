@@ -31,7 +31,7 @@ func TestKanoPublicIndexAssets(t *testing.T) {
 			serveFileWithReplace(response, httptest.NewRequest("GET", test.path, nil), path, theme)
 			body := response.Body.String()
 			if test.public {
-				for _, expected := range []string{"Kano 通行证", `href="/kano/favicon.png"`, `href="/kano/icon-192.png"`, `imagesrcset=`, `imagesizes=`, `fetchpriority="high"`} {
+				for _, expected := range []string{"Kano 通行证", `rel="icon" href="/kano/logo.png"`, `rel="apple-touch-icon" href="/kano/logo.png"`, `imagesrcset=`, `imagesizes=`, `fetchpriority="high"`} {
 					if !strings.Contains(body, expected) {
 						t.Errorf("missing public asset metadata: %s", expected)
 					}

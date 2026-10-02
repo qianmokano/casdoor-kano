@@ -55,8 +55,8 @@ export function KanoLayout({children, publicPage = false, application}: {
     const title = document.title;
     document.title = "Kano 通行证 · 账户与安全";
     const icons = [
-      {selector: "link[rel='icon']", href: "/kano/favicon.png"},
-      {selector: "link[rel='apple-touch-icon']", href: "/kano/icon-192.png"},
+      {selector: "link[rel='icon']", href: "/kano/logo.png"},
+      {selector: "link[rel='apple-touch-icon']", href: "/kano/logo.png"},
     ].map(({selector, href}) => {
       const element = document.querySelector<HTMLLinkElement>(selector);
       const previousHref = element?.getAttribute("href");
@@ -82,7 +82,7 @@ export function KanoLayout({children, publicPage = false, application}: {
       <a className="kano-skip-link" href="#kano-main">{t("Skip to content")}</a>
       <header className="kano-header kano-container">
         <Link to="/" className="kano-brand" aria-label={t("Kano Passport")}>
-          <img className="kano-brand-image" src="/kano/logo.png" width="40" height="34" alt="" />
+          <img className="kano-brand-image" src="/kano/logo.png" width="32" height="32" alt="" />
           <span>Kano <span className="kano-brand-subtitle">{t("Passport")}</span></span>
         </Link>
         <nav aria-label={t("Main navigation")} className="kano-nav">
