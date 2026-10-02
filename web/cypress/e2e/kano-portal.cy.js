@@ -1,6 +1,7 @@
 const organization = {
   owner: "admin", name: "kano", displayName: "Kano 通行证",
   passwordObfuscatorType: "Plain",
+  favicon: "/kano/icon-512.png",
   passwordOptions: [], mfaItems: [], languages: ["zh", "en"], accountItems: [],
 };
 const user = {
@@ -84,6 +85,10 @@ describe("Kano customer portal", () => {
       cy.viewport(width, 900);
       visit("/");
       cy.contains("h1", "一个账户，连接 Kano 服务。").should("be.visible");
+      cy.get(".kano-brand-image").should("be.visible").and(($image) => {
+        expect($image[0].naturalWidth).to.be.greaterThan(0);
+      });
+      cy.get("head link[rel=icon]").should("have.attr", "href", "/kano/favicon.png");
       cy.contains("summary", "进入另一个服务时需要重新登录吗？").click();
       cy.contains("各自管理登录会话").should("be.visible");
       noOverflow();
@@ -96,6 +101,8 @@ describe("Kano customer portal", () => {
     visit("/account");
     cy.location("pathname").should("eq", "/login/kano");
     cy.get(".kano-auth-panel").should("be.visible");
+    cy.get("head link[rel=icon]").should("have.attr", "href", "/kano/favicon.png");
+    cy.get("head link[rel=apple-touch-icon]").should("have.attr", "href", "/kano/icon-192.png");
     cy.contains("a", "忘记密码").should("have.attr", "href", "/forget/kano");
   });
 
@@ -103,6 +110,7 @@ describe("Kano customer portal", () => {
     fixture();
     visit("/account");
     cy.contains("h1", "账户与安全").should("be.visible");
+    cy.get("head link[rel=icon]").should("have.attr", "href", "/kano/favicon.png");
     cy.contains("demo@example.com").should("be.visible");
     cy.get("input[type=email]").should("not.exist");
     cy.get("main").should("not.contain", "stable-demo-subject");

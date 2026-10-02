@@ -182,7 +182,7 @@ export function AuthLayout({
   const isDark = useIsDark();
   const isMobile = useIsMobile();
   const isPhone = useIsPhone();
-  useApplicationHelmet(preview ? null : application);
+  useApplicationHelmet(preview || isKanoApplication(application) ? null : application);
   // headerHtml is the organization/application chrome, pageHtml is the per-page one
   useCustomHead(preview ? undefined : application?.headerHtml, "header");
   useCustomHead(preview ? undefined : application?.pageHtml, "page");

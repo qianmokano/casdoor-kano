@@ -35,7 +35,7 @@ export function AppLayout({children}: {children?: React.ReactNode} = {}) {
   const palette = useCommandPalette();
   // the console follows the signed-in user's organization theme, title and favicon
   useThemeData(Setting.getThemeData(account?.organization, null));
-  useAccountHelmet(account);
+  useAccountHelmet(account, !isKanoCustomer(account));
 
   if (isKanoCustomer(account)) {
     return <KanoLayout><React.Suspense fallback={<Loading />}>{children ?? <Outlet />}</React.Suspense></KanoLayout>;

@@ -54,18 +54,26 @@ export function KanoLayout({children, publicPage = false, application}: {
     document.documentElement.setAttribute("data-kano-portal", "");
     const title = document.title;
     document.title = "Kano 通行证 · 账户与安全";
-    const favicon = document.querySelector<HTMLLinkElement>("link[rel='icon']");
-    const previousIcon = favicon?.getAttribute("href");
-    favicon?.setAttribute("href", "/kano/favicon.svg");
+    const icons = [
+      {selector: "link[rel='icon']", href: "/kano/favicon.png"},
+      {selector: "link[rel='apple-touch-icon']", href: "/kano/icon-192.png"},
+    ].map(({selector, href}) => {
+      const element = document.querySelector<HTMLLinkElement>(selector);
+      const previousHref = element?.getAttribute("href");
+      element?.setAttribute("href", href);
+      return {element, previousHref};
+    });
     if (!localStorage.getItem("language")) {
       Setting.setLanguage("zh");
     }
     return () => {
       document.documentElement.removeAttribute("data-kano-portal");
       document.title = title;
-      if (previousIcon) {
-        favicon?.setAttribute("href", previousIcon);
-      }
+      icons.forEach(({element, previousHref}) => {
+        if (previousHref) {
+          element?.setAttribute("href", previousHref);
+        }
+      });
     };
   }, []);
 
@@ -74,7 +82,7 @@ export function KanoLayout({children, publicPage = false, application}: {
       <a className="kano-skip-link" href="#kano-main">{t("Skip to content")}</a>
       <header className="kano-header kano-container">
         <Link to="/" className="kano-brand" aria-label={t("Kano Passport")}>
-          <span className="kano-monogram" aria-hidden="true">K</span>
+          <img className="kano-brand-image" src="/kano/logo.png" width="40" height="34" alt="" />
           <span>Kano <span className="kano-brand-subtitle">{t("Passport")}</span></span>
         </Link>
         <nav aria-label={t("Main navigation")} className="kano-nav">
