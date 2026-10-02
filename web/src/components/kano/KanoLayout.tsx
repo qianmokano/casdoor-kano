@@ -1,6 +1,6 @@
 import * as React from "react";
 import {ArrowUpRight, LogOut} from "lucide-react";
-import {Link} from "react-router-dom";
+import {Link, useLocation} from "react-router-dom";
 import {useTranslation} from "react-i18next";
 import {Button} from "@/components/ui/button";
 import {LanguageSelect} from "@/components/common/LanguageSelect";
@@ -11,29 +11,13 @@ import * as Setting from "@/lib/setting";
 import * as OrganizationBackend from "@/backend/OrganizationBackend";
 import "./kano.css";
 
-export function KanoHero({className = "", priority = false}: {className?: string; priority?: boolean}) {
-  return (
-    <img
-      className={`kano-hero-image ${className}`}
-      src="/kano/hero-768.webp"
-      srcSet="/kano/hero-480.webp 480w, /kano/hero-768.webp 768w, /kano/hero-1280.webp 1280w"
-      sizes="(max-width: 767px) 100vw, 560px"
-      width="1536"
-      height="1024"
-      alt=""
-      fetchPriority={priority ? "high" : "auto"}
-      loading={priority ? "eager" : "lazy"}
-      decoding="async"
-    />
-  );
-}
-
 export function KanoLayout({children, publicPage = false, application}: {
   children: React.ReactNode;
   publicPage?: boolean;
   application?: any;
 }) {
   const {t} = useTranslation("kano");
+  const {pathname} = useLocation();
   const {account} = useAccount();
   const [publicApplication, setPublicApplication] = React.useState<any>(null);
   React.useEffect(() => {
@@ -52,8 +36,6 @@ export function KanoLayout({children, publicPage = false, application}: {
 
   React.useEffect(() => {
     document.documentElement.setAttribute("data-kano-portal", "");
-    const title = document.title;
-    document.title = "Kano 通行证 · 账户与安全";
     const icons = [
       {selector: "link[rel='icon']", href: "/kano/logo.png"},
       {selector: "link[rel='apple-touch-icon']", href: "/kano/logo.png"},
@@ -68,7 +50,6 @@ export function KanoLayout({children, publicPage = false, application}: {
     }
     return () => {
       document.documentElement.removeAttribute("data-kano-portal");
-      document.title = title;
       icons.forEach(({element, previousHref}) => {
         if (previousHref) {
           element?.setAttribute("href", previousHref);
@@ -77,28 +58,61 @@ export function KanoLayout({children, publicPage = false, application}: {
     };
   }, []);
 
+  // Kano is not the console: its tab title names the portal section, not the account page.
+  React.useEffect(() => {
+    const previous = document.title;
+    const section = pathname === "/account" ? "Account and security"
+      : pathname.startsWith("/mfa/setup") ? "Two-step verification"
+        : pathname.startsWith("/login") ? "Sign in" : null;
+    document.title = section ? `${t("Kano Passport")} · ${t(section)}` : t("Kano Passport");
+    return () => { document.title = previous; };
+  }, [pathname, t]);
+
+  // Sticky header hairline + one-time scroll reveals for .kano-reveal sections.
+  React.useEffect(() => {
+    const header = document.querySelector(".kano-header");
+    const onScroll = () => header?.classList.toggle("kano-header-scrolled", window.scrollY > 8);
+    onScroll();
+    window.addEventListener("scroll", onScroll, {passive: true});
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-visible");
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, {rootMargin: "0px 0px -12% 0px"});
+    document.querySelectorAll(".kano-reveal").forEach((element) => revealObserver.observe(element));
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      revealObserver.disconnect();
+    };
+  }, []);
+
   return (
     <div className="kano-portal">
       <a className="kano-skip-link" href="#kano-main">{t("Skip to content")}</a>
-      <header className="kano-header kano-container">
-        <Link to="/" className="kano-brand" aria-label={t("Kano Passport")}>
-          <img className="kano-brand-image" src="/kano/logo.png" width="32" height="32" alt="" />
-          <span>Kano <span className="kano-brand-subtitle">{t("Passport")}</span></span>
-        </Link>
-        <nav aria-label={t("Main navigation")} className="kano-nav">
-          {publicPage ? (
-            <>
-              <a className="kano-nav-secondary" href="#features">{t("Features")}</a>
-              <a className="kano-nav-secondary" href="#faq">{t("FAQ")}</a>
-            </>
-          ) : account ? <Link to="/account">{t("Account and security")}</Link> : null}
-          <LanguageSelect languages={["zh", "en"]} />
-          {account ? (
-            <Button variant="ghost" size="sm" onClick={logout} aria-label={t("Sign out")}>
-              <LogOut className="h-4 w-4" /><span className="kano-nav-secondary">{t("Sign out")}</span>
-            </Button>
-          ) : <Link className="kano-nav-login" to="/login/kano">{t("Sign in")}</Link>}
-        </nav>
+      <header className="kano-header">
+        <div className="kano-container kano-header-inner">
+          <Link to="/" className="kano-brand" aria-label={t("Kano Passport")}>
+            <img className="kano-brand-image" src="/kano/logo.png" width="28" height="28" alt="" />
+            <span>Kano <span className="kano-brand-subtitle">{t("Passport")}</span></span>
+          </Link>
+          <nav aria-label={t("Main navigation")} className="kano-nav">
+            {publicPage ? (
+              <>
+                <a className="kano-nav-secondary" href="#features">{t("Features")}</a>
+                <a className="kano-nav-secondary" href="#faq">{t("FAQ")}</a>
+              </>
+            ) : account ? <Link to="/account">{t("Account and security")}</Link> : null}
+            <LanguageSelect languages={["zh", "en"]} />
+            {account ? (
+              <Button variant="ghost" size="sm" onClick={logout} aria-label={t("Sign out")}>
+                <LogOut className="h-4 w-4" /><span className="kano-nav-secondary">{t("Sign out")}</span>
+              </Button>
+            ) : <Link className="kano-nav-login" to="/login/kano">{t("Sign in")}</Link>}
+          </nav>
+        </div>
       </header>
       <main id="kano-main" className="kano-main" tabIndex={-1}>{children}</main>
       <footer className="kano-footer kano-container">

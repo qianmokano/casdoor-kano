@@ -17,7 +17,8 @@ import {useIsDark} from "@/hooks/use-theme";
 import * as Setting from "@/lib/setting";
 import {cn} from "@/lib/utils";
 import {useTranslation} from "react-i18next";
-import {KanoHero, KanoLayout} from "@/components/kano/KanoLayout";
+import {KanoLayout} from "@/components/kano/KanoLayout";
+import {KanoOrb} from "@/components/kano/KanoOrb";
 import {isKanoApplication} from "@/lib/kano";
 
 const PHONE_QUERY = "(max-width: 639.98px)";
@@ -232,8 +233,11 @@ export function AuthLayout({
     return (
       <KanoLayout application={application}>
         <div className="kano-container kano-auth kano-appear">
-          <aside className="kano-auth-aside"><p className="kano-eyebrow">KANO PASSPORT</p><h1>{t("One account. Connected to Kano.")}</h1><p>{t("A single place for your identity, password and account security. Simple to use, always yours.")}</p><KanoHero /></aside>
-          <div><div className="kano-auth-panel"><div className={cn("login-form", className)}>{onBack ? <Button type="button" variant="ghost" size="iconSm" className="mb-2" aria-label={i18next.t("general:Back")} onClick={onBack}><ArrowLeft /></Button> : null}{children}</div></div>{footer ? <div className="kano-auth-footer">{footer}</div> : null}</div>
+          <div className="kano-auth-orb"><KanoOrb /></div>
+          <h1>{t("One account. Connected to Kano.")}</h1>
+          <p className="kano-auth-subtitle">{t("A single place for your identity, password and account security. Simple to use, always yours.")}</p>
+          <div className="kano-auth-panel"><div className={cn("login-form", className)}>{onBack ? <Button type="button" variant="ghost" size="iconSm" className="mb-2" aria-label={i18next.t("general:Back")} onClick={onBack}><ArrowLeft /></Button> : null}{children}</div></div>
+          {footer ? <div className="kano-auth-footer">{footer}</div> : null}
         </div>
       </KanoLayout>
     );
