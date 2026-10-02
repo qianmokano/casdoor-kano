@@ -233,12 +233,15 @@ const DEFAULT_FAVICON = "https://cdn.casdoor.com/static/favicon.png";
  * organization. Signed out, the favicon falls back to Casdoor's own — the same
  * two <Helmet> blocks web/src/App.js renders.
  */
-export function useAccountHelmet(account: any) {
+export function useAccountHelmet(account: any, enabled = true) {
   const organization = account?.organization;
   const title = organization?.displayName;
   const favicon = organization?.favicon || DEFAULT_FAVICON;
 
   React.useEffect(() => {
+    if (!enabled) {
+      return;
+    }
     if (title) {
       document.title = title;
     }
@@ -250,7 +253,7 @@ export function useAccountHelmet(account: any) {
       document.head.appendChild(link);
     }
     link.href = favicon;
-  }, [title, favicon]);
+  }, [enabled, title, favicon]);
 }
 
 const customHeadLoadedIds = new Set<string>();

@@ -313,7 +313,7 @@ func serveFileWithReplace(w http.ResponseWriter, r *http.Request, name string, o
 }
 
 func kanoPublicIndexHtml(content string) string {
-	content = strings.ReplaceAll(content, "https://cdn.casbin.org/img/favicon.png", "/kano/favicon.svg")
+	content = strings.ReplaceAll(content, "https://cdn.casbin.org/img/favicon.png", "/kano/logo.png")
 	content = strings.ReplaceAll(content, "<title>Casdoor</title>", "<title>Kano 通行证 · 账户与安全</title>")
 	return strings.Replace(content, "</head>", `<link rel="preload" as="image" href="/kano/hero-768.webp" imagesrcset="/kano/hero-480.webp 480w, /kano/hero-768.webp 768w, /kano/hero-1280.webp 1280w" imagesizes="(max-width: 767px) 100vw, 560px" fetchpriority="high" />
 </head>`, 1)

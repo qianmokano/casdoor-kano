@@ -193,7 +193,7 @@ export default function KanoAccountPage() {
   return (
     <div className="kano-container kano-account kano-appear">
       <div className="kano-account-heading">
-        <div><p className="kano-eyebrow">KANO PASSPORT</p><h1>{t("Account and security")}</h1><p className="kano-account-subtitle">{t("Your account belongs to you. Manage the identity and security settings used across Kano services.")}</p></div>
+        <div><h1>{t("Account and security")}</h1><p className="kano-account-subtitle">{t("Your account belongs to you. Manage the identity and security settings used across Kano services.")}</p></div>
         <span className={`kano-status ${factors.length ? "" : "kano-status-pending"}`}>{t(factors.length ? "Two-step verification on" : "Two-step verification off")}</span>
       </div>
       <section className="kano-panel" aria-labelledby="kano-profile-heading">

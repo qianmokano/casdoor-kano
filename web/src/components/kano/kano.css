@@ -1,126 +1,224 @@
 /* Kano fork: customer portal styles. Administrative console styles are unchanged. */
 html[data-kano-portal], .kano-portal {
-  --background: 44 24% 96%;
-  --foreground: 214 8% 16%;
+  --background: 220 60% 99%;
+  --foreground: 215 39% 10%;
   --card: 0 0% 100%;
-  --card-foreground: 214 8% 16%;
+  --card-foreground: 215 39% 10%;
   --popover: 0 0% 100%;
-  --popover-foreground: 214 8% 16%;
-  --primary: 214 8% 16%;
+  --popover-foreground: 215 39% 10%;
+  --primary: 222 100% 59%;
   --primary-foreground: 0 0% 100%;
-  --secondary: 40 16% 93%;
-  --secondary-foreground: 214 8% 16%;
-  --muted: 40 16% 93%;
-  --muted-foreground: 210 5% 41%;
-  --accent: 40 16% 93%;
-  --accent-foreground: 214 8% 16%;
-  --border: 40 9% 86%;
-  --input: 40 9% 82%;
-  --ring: 214 8% 30%;
+  --secondary: 220 30% 96%;
+  --secondary-foreground: 215 39% 10%;
+  --muted: 220 30% 96%;
+  --muted-foreground: 216 12% 41%;
+  --accent: 220 30% 96%;
+  --accent-foreground: 215 39% 10%;
+  --border: 217 32% 92%;
+  --input: 218 24% 87%;
+  --ring: 222 100% 59%;
   color-scheme: light;
 }
-.kano-portal { min-height: 100svh; display: flex; flex-direction: column; color: #25282c; background: #f7f6f2; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; }
+.kano-portal {
+  min-height: 100svh; display: flex; flex-direction: column;
+  overflow-x: clip;
+  color: #0f1722; background: #fbfcfe;
+  font-family: "Inter Variable", -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
 .kano-container { width: min(1120px, calc(100% - 64px)); margin-inline: auto; }
-.kano-header { display: flex; justify-content: space-between; align-items: center; min-height: 100px; gap: 24px; }
-.kano-brand { display: flex; align-items: center; gap: 12px; font-size: 20px; font-weight: 600; letter-spacing: -.7px; white-space: nowrap; }
-.kano-monogram { width: 32px; height: 32px; display: grid; place-items: center; border: 1px solid #25282c; border-radius: 50%; font-family: Georgia, serif; font-size: 22px; font-weight: 400; }
-.kano-brand-subtitle { font-size: 16px; margin-left: 3px; font-weight: 400; }
-.kano-nav { display: flex; align-items: center; gap: 24px; font-size: 13px; }
-.kano-nav-login { border: 1px solid #d6d5cf; border-radius: 999px; padding: 9px 20px; }
+
+/* ---- header -------------------------------------------------------------- */
+.kano-header {
+  position: sticky; top: 0; z-index: 50;
+  background: rgba(251, 252, 254, .72);
+  backdrop-filter: saturate(180%) blur(16px);
+  -webkit-backdrop-filter: saturate(180%) blur(16px);
+  transition: border-color .25s, box-shadow .25s;
+  border-bottom: 1px solid transparent;
+}
+.kano-header-scrolled { border-bottom-color: #e4e9f1; }
+.kano-header-inner { display: flex; justify-content: space-between; align-items: center; min-height: 64px; gap: 24px; }
+.kano-brand { display: flex; align-items: center; gap: 10px; font-size: 17px; font-weight: 600; letter-spacing: -.02em; white-space: nowrap; }
+.kano-brand-image { width: 28px; height: 28px; flex-shrink: 0; object-fit: contain; }
+.kano-brand-subtitle { font-size: 14px; margin-left: 2px; font-weight: 400; color: #5c6675; }
+.kano-nav { display: flex; align-items: center; gap: 26px; font-size: 13px; }
+.kano-nav a { color: #3d4654; transition: color .2s; }
+.kano-nav a:hover { color: #0f1722; }
+.kano-nav-login { border-radius: 999px; padding: 8px 18px; background: #0f1722; color: #fff !important; transition: background .2s !important; }
+.kano-nav-login:hover { background: #2e6bff; }
 .kano-main { flex: 1; outline: none; }
-.kano-skip-link { position: fixed; top: 12px; left: 12px; z-index: 100; transform: translateY(-150%); padding: 12px; background: #25282c; color: white; border-radius: 8px; }
+.kano-skip-link { position: fixed; top: 12px; left: 12px; z-index: 100; transform: translateY(-150%); padding: 12px; background: #0f1722; color: white; border-radius: 8px; }
 .kano-skip-link:focus { transform: none; }
-.kano-eyebrow { color: #636970; font-size: 12px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; }
-.kano-hero { display: grid; grid-template-columns: 1fr 1.12fr; align-items: center; min-height: 630px; gap: 20px; padding-block: 60px 100px; }
-.kano-hero h1 { font-size: clamp(40px, 4.8vw, 62px); line-height: 1.2; letter-spacing: -.055em; font-weight: 500; margin-block: 25px; }
-.kano-hero-description { max-width: 370px; color: #646970; line-height: 1.9; font-size: 15px; margin-bottom: 32px; }
-.kano-primary-link { display: inline-flex; align-items: center; gap: 22px; padding: 15px 24px; border-radius: 999px; background: #25282c; color: white; font-size: 14px; transition: background .2s, transform .2s; }
-.kano-primary-link:hover { background: #43464c; transform: translateY(-2px); }
-.kano-hero-image { display: block; width: 100%; height: auto; mix-blend-mode: multiply; }
-.kano-hero-visual { position: relative; }
-.kano-hero-caption { text-align: center; color: #636970; font-size: 10px; letter-spacing: .15em; margin-top: 15px; }
-.kano-section { padding-block: 88px; border-top: 1px solid #deddd7; scroll-margin-top: 24px; }
-.kano-section-heading { display: flex; justify-content: space-between; gap: 30px; align-items: end; margin-bottom: 48px; }
-.kano-section h2 { font-size: 34px; line-height: 1.35; letter-spacing: -.035em; font-weight: 500; margin-top: 16px; }
-.kano-section-description { max-width: 340px; font-size: 14px; line-height: 1.8; color: #646970; }
-.kano-features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 56px; }
-.kano-feature-icon { width: 40px; height: 40px; display: grid; place-items: center; color: #565d63; margin-bottom: 24px; }
-.kano-feature h3 { font-size: 18px; font-weight: 500; margin-bottom: 14px; }
-.kano-feature p { font-size: 14px; color: #646970; line-height: 1.9; }
+
+/* ---- hero ---------------------------------------------------------------- */
+.kano-hero {
+  position: relative; display: flex; flex-direction: column; align-items: center;
+  text-align: center; justify-content: center; min-height: 84svh; padding-block: 72px 96px;
+}
+.kano-hero-glow {
+  position: absolute; top: 6%; left: 50%; width: 620px; height: 620px;
+  transform: translateX(-50%); pointer-events: none;
+  background: radial-gradient(circle, rgba(46, 107, 255, .14) 0%, rgba(46, 107, 255, .05) 42%, transparent 68%);
+  animation: kano-glow-drift 14s ease-in-out infinite alternate;
+}
+@keyframes kano-glow-drift {
+  from { transform: translateX(-54%) translateY(-2%); }
+  to { transform: translateX(-46%) translateY(3%); }
+}
+.kano-hero-orb { position: relative; width: min(320px, 58vw); aspect-ratio: 1; margin-bottom: 20px; will-change: transform; }
+.kano-orb, .kano-orb-fallback { display: block; width: 100%; height: 100%; }
+.kano-orb-fallback {
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 32% 26%, rgba(255, 255, 255, .95), rgba(255, 255, 255, 0) 44%),
+    radial-gradient(circle at 66% 76%, #1b3fa0, #2e6bff 58%, #a9c4ff 100%);
+  box-shadow: 0 30px 80px -24px rgba(46, 107, 255, .35), inset 0 0 60px rgba(255, 255, 255, .25);
+}
+.kano-hero h1 {
+  font-size: clamp(38px, 5.2vw, 60px); line-height: 1.18; letter-spacing: -.03em;
+  font-weight: 600; max-width: 14em; margin: 0; text-wrap: balance;
+}
+.kano-hero-description { max-width: 480px; color: #5c6675; line-height: 1.85; font-size: 16px; margin: 22px 0 36px; text-wrap: balance; }
+.kano-hero-actions { display: flex; align-items: center; gap: 22px; }
+.kano-hero-actions > a:not(.kano-primary-link) { color: #3d4654; font-size: 14px; transition: color .2s; }
+.kano-hero-actions > a:not(.kano-primary-link):hover { color: #2e6bff; }
+.kano-primary-link {
+  display: inline-flex; align-items: center; gap: 12px; padding: 15px 28px; border-radius: 999px;
+  background: #2e6bff; color: white; font-size: 15px; font-weight: 500;
+  box-shadow: 0 12px 32px -12px rgba(46, 107, 255, .45);
+  transition: background .2s, transform .2s, box-shadow .2s;
+}
+.kano-primary-link:hover { background: #1f55d6; transform: translateY(-2px); box-shadow: 0 18px 40px -12px rgba(46, 107, 255, .5); }
+
+/* ---- entrance choreography (one orchestrated moment) --------------------- */
+.kano-hero-orb > * { animation: kano-orb-in .9s cubic-bezier(.22, 1, .36, 1) both; }
+.kano-hero h1 { animation: kano-rise .8s cubic-bezier(.22, 1, .36, 1) .12s both; }
+.kano-hero-description { animation: kano-rise .8s cubic-bezier(.22, 1, .36, 1) .24s both; }
+.kano-hero-actions { animation: kano-rise .8s cubic-bezier(.22, 1, .36, 1) .36s both; }
+@keyframes kano-orb-in { from { opacity: 0; transform: scale(.92); } to { opacity: 1; transform: scale(1); } }
+@keyframes kano-rise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+.kano-reveal { opacity: 0; transform: translateY(12px); transition: opacity .7s ease, transform .7s cubic-bezier(.22, 1, .36, 1); }
+.kano-reveal.is-visible { opacity: 1; transform: none; }
+.kano-appear { animation: kano-rise .7s ease-out both; }
+
+/* ---- sections ------------------------------------------------------------ */
+.kano-section { padding-block: 96px; border-top: 1px solid #e4e9f1; scroll-margin-top: 64px; }
+.kano-section-heading { display: flex; justify-content: space-between; gap: 30px; align-items: end; margin-bottom: 56px; }
+.kano-section h2 { font-size: clamp(28px, 3vw, 36px); line-height: 1.3; letter-spacing: -.025em; font-weight: 600; margin: 0; }
+.kano-section-description { max-width: 360px; font-size: 14px; line-height: 1.85; color: #5c6675; margin: 0; }
+.kano-features { display: grid; grid-template-columns: repeat(3, 1fr); }
+.kano-feature { padding: 4px 44px; border-left: 1px solid #e4e9f1; }
+.kano-feature:first-child { border-left: none; padding-left: 0; }
+.kano-feature-icon { width: 40px; height: 40px; display: grid; place-items: center; color: #2e6bff; margin-bottom: 22px; }
+.kano-feature h3 { font-size: 17px; font-weight: 600; letter-spacing: -.01em; margin: 0 0 12px; }
+.kano-feature p { font-size: 14px; color: #5c6675; line-height: 1.85; margin: 0; }
+
+/* ---- FAQ ----------------------------------------------------------------- */
 .kano-faq { display: grid; grid-template-columns: .8fr 1.2fr; gap: 80px; }
-.kano-faq details { border-bottom: 1px solid #deddd7; padding-block: 22px; }
+.kano-faq details { border-bottom: 1px solid #e4e9f1; padding-block: 22px; }
 .kano-faq details:first-child { padding-top: 0; }
-.kano-faq summary { font-size: 15px; font-weight: 500; cursor: pointer; list-style: none; display: flex; justify-content: space-between; gap: 16px; }
+.kano-faq summary { font-size: 15px; font-weight: 500; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; gap: 16px; transition: color .2s; }
+.kano-faq summary:hover { color: #2e6bff; }
 .kano-faq summary::-webkit-details-marker { display: none; }
-.kano-faq summary::after { content: "+"; color: #646970; }
-.kano-faq details[open] summary::after { content: "−"; }
-.kano-faq details p { color: #646970; font-size: 14px; line-height: 1.9; padding-top: 16px; }
-.kano-footer { border-top: 1px solid #deddd7; padding-block: 36px; display: flex; align-items: start; justify-content: space-between; gap: 28px; color: #646970; font-size: 12px; }
-.kano-footer-brand { font-weight: 500; color: #25282c; }
-.kano-footer p { margin-top: 8px; }
-.kano-footer-links { display: flex; flex-wrap: wrap; gap: 18px; align-items: center; }
-.kano-footer-links a { display: flex; align-items: center; gap: 4px; }
-.kano-auth { display: grid; grid-template-columns: 1fr 420px; align-items: center; gap: 80px; padding-block: 65px 90px; min-height: 650px; }
-.kano-auth-aside h1 { font-size: 40px; font-weight: 500; line-height: 1.35; letter-spacing: -.035em; margin-block: 20px 16px; }
-.kano-auth-aside p { max-width: 350px; color: #646970; font-size: 14px; line-height: 1.9; }
-.kano-auth-aside img { max-width: 400px; margin-block: 20px; }
-.kano-auth-panel { border: 1px solid #e3e1db; border-radius: 24px; padding: 36px; background: white; }
+.kano-faq summary::after {
+  content: ""; width: 8px; height: 8px; flex-shrink: 0;
+  border-right: 1.5px solid #5c6675; border-bottom: 1.5px solid #5c6675;
+  transform: rotate(45deg) translateY(-2px); transition: transform .25s;
+}
+.kano-faq details[open] summary::after { transform: rotate(225deg) translateY(-2px); }
+.kano-faq details p { color: #5c6675; font-size: 14px; line-height: 1.9; padding-top: 16px; margin: 0; }
+
+/* ---- footer -------------------------------------------------------------- */
+.kano-footer { border-top: 1px solid #e4e9f1; padding-block: 40px; display: flex; align-items: start; justify-content: space-between; gap: 28px; color: #5c6675; font-size: 12px; }
+.kano-footer-brand { font-weight: 600; color: #0f1722; }
+.kano-footer p { margin: 8px 0 0; }
+.kano-footer-links { display: flex; flex-wrap: wrap; gap: 20px; align-items: center; }
+.kano-footer-links a { display: flex; align-items: center; gap: 4px; color: #3d4654; transition: color .2s; }
+.kano-footer-links a:hover { color: #2e6bff; }
+
+/* ---- auth ---------------------------------------------------------------- */
+.kano-auth { display: flex; flex-direction: column; align-items: center; text-align: center; padding-block: 72px 96px; }
+.kano-auth-orb { width: 96px; aspect-ratio: 1; margin-bottom: 24px; }
+.kano-auth h1 { font-size: clamp(28px, 3.4vw, 38px); font-weight: 600; line-height: 1.3; letter-spacing: -.025em; margin: 0 0 14px; }
+.kano-auth-subtitle { max-width: 400px; color: #5c6675; font-size: 14px; line-height: 1.85; margin: 0 0 40px; }
+.kano-auth-panel {
+  width: min(420px, 100%); border: 1px solid #e4e9f1; border-radius: 24px; padding: 36px;
+  background: white; box-shadow: 0 24px 64px -36px rgba(27, 63, 160, .22); text-align: left;
+}
 .kano-auth-panel .login-form { width: 100%; }
 .kano-auth-panel input { background: white; }
 .kano-auth-panel button[type="submit"] { border-radius: 10px; }
-.kano-auth-footer { margin-top: 24px; font-size: 13px; color: #646970; text-align: center; }
-.kano-account { max-width: 850px; padding-block: 45px 88px; }
-.kano-account-heading { display: flex; gap: 24px; justify-content: space-between; align-items: end; padding-bottom: 32px; }
-.kano-account-heading h1 { font-size: 38px; line-height: 1.3; font-weight: 500; letter-spacing: -.035em; margin-block: 12px; }
-.kano-account-subtitle { color: #646970; line-height: 1.8; font-size: 14px; max-width: 550px; }
-.kano-panel { background: white; border: 1px solid #e3e1db; border-radius: 20px; margin-top: 24px; padding: 28px 32px; }
+.kano-auth-footer { margin-top: 24px; font-size: 13px; color: #5c6675; text-align: center; }
+
+/* ---- account ------------------------------------------------------------- */
+.kano-account { max-width: 850px; padding-block: 56px 96px; }
+.kano-account-heading { display: flex; gap: 24px; justify-content: space-between; align-items: end; padding-bottom: 36px; }
+.kano-account-heading h1 { font-size: clamp(30px, 3.4vw, 38px); line-height: 1.3; font-weight: 600; letter-spacing: -.025em; margin: 0 0 14px; }
+.kano-account-subtitle { color: #5c6675; line-height: 1.85; font-size: 14px; max-width: 550px; margin: 0; }
+.kano-panel {
+  background: white; border: 1px solid #e4e9f1; border-radius: 20px; margin-top: 24px; padding: 28px 32px;
+  box-shadow: 0 16px 48px -36px rgba(27, 63, 160, .16);
+}
 .kano-panel-heading { display: flex; align-items: center; gap: 12px; padding-bottom: 22px; }
-.kano-panel-heading h2 { font-size: 17px; font-weight: 500; }
-.kano-panel-heading svg { width: 18px; color: #636970; }
-.kano-account-row { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding-block: 22px; border-top: 1px solid #efeee9; }
+.kano-panel-heading h2 { font-size: 17px; font-weight: 600; letter-spacing: -.01em; }
+.kano-panel-heading svg { width: 18px; color: #2e6bff; }
+.kano-account-row { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding-block: 22px; border-top: 1px solid #eef1f6; }
 .kano-account-row:first-of-type { border-top: none; }
 .kano-row-title { font-size: 14px; font-weight: 500; }
-.kano-row-detail { font-size: 13px; color: #646970; line-height: 1.8; margin-top: 7px; overflow-wrap: anywhere; }
-.kano-status { font-size: 11px; color: #4d6858; background: #eef3ed; border: 1px solid #dde7dc; border-radius: 999px; padding: 5px 10px; white-space: nowrap; }
-.kano-status-pending { background: #f5f3ed; color: #756345; border-color: #e8e1d3; }
+.kano-row-detail { font-size: 13px; color: #5c6675; line-height: 1.8; margin-top: 7px; overflow-wrap: anywhere; }
+.kano-status { font-size: 11px; color: #1b3fa0; background: #eef3ff; border: 1px solid #d9e5ff; border-radius: 999px; padding: 5px 10px; white-space: nowrap; }
+.kano-status-pending { background: #f4f6fa; color: #5c6675; border-color: #e4e9f1; }
 .kano-inline-editor { padding-top: 18px; max-width: 400px; }
-.kano-service-link { display: flex; align-items: center; gap: 14px; padding-block: 18px; border-top: 1px solid #efeee9; }
+.kano-service-link { display: flex; align-items: center; gap: 14px; padding-block: 18px; border-top: 1px solid #eef1f6; transition: color .2s; }
 .kano-service-link:first-of-type { border-top: none; }
-.kano-service-link > svg:first-child { width: 20px; color: #636970; }
+.kano-service-link:hover { color: #2e6bff; }
+.kano-service-link > svg:first-child { width: 20px; color: #2e6bff; }
 .kano-service-link > div { flex: 1; }
-.kano-service-link > svg:last-child { width: 16px; color: #636970; }
-.kano-note { margin-top: 24px; font-size: 12px; line-height: 1.9; color: #646970; }
-.kano-appear { animation: kano-appear .7s ease-out both; }
-@keyframes kano-appear { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
-@media (max-width: 900px) { .kano-auth { grid-template-columns: 1fr 380px; gap: 32px; } .kano-faq { gap: 40px; } }
+.kano-service-link > svg:last-child { width: 16px; color: #5c6675; }
+.kano-note { margin-top: 24px; font-size: 12px; line-height: 1.9; color: #5c6675; }
+
+/* ---- responsive ---------------------------------------------------------- */
+@media (max-width: 900px) {
+  .kano-faq { gap: 40px; }
+  .kano-feature { padding-inline: 28px; }
+}
 @media (max-width: 767px) {
   .kano-container { width: calc(100% - 40px); }
-  .kano-header { min-height: 80px; gap: 12px; }
-  .kano-brand { font-size: 18px; gap: 9px; }
+  .kano-header-inner { min-height: 56px; gap: 12px; }
+  .kano-brand { font-size: 16px; gap: 8px; }
+  .kano-brand-image { width: 24px; height: 24px; }
   .kano-brand-subtitle { font-size: 13px; }
   .kano-nav { gap: 10px; }
   .kano-nav-secondary { display: none; }
-  .kano-nav-login { padding: 8px 14px; }
-  .kano-hero { grid-template-columns: 1fr; min-height: auto; padding-block: 45px 60px; gap: 35px; }
-  .kano-hero h1 { font-size: 36px; max-width: 350px; }
-  .kano-hero-description { font-size: 14px; }
-  .kano-hero-visual { max-width: 540px; margin-inline: auto; }
-  .kano-section { padding-block: 55px; }
-  .kano-section h2 { font-size: 28px; }
-  .kano-section-heading { flex-direction: column; align-items: start; gap: 20px; margin-bottom: 35px; }
-  .kano-features { grid-template-columns: 1fr; gap: 36px; }
+  .kano-nav-login { padding: 7px 14px; }
+  .kano-hero { min-height: auto; padding-block: 56px 72px; }
+  .kano-hero-glow { width: 420px; height: 420px; }
+  .kano-hero-orb { width: min(240px, 62vw); margin-bottom: 12px; }
+  .kano-hero h1 { font-size: 34px; }
+  .kano-hero-description { font-size: 15px; margin: 18px 0 30px; }
+  .kano-section { padding-block: 64px; scroll-margin-top: 56px; }
+  .kano-section-heading { flex-direction: column; align-items: start; gap: 16px; margin-bottom: 40px; }
+  .kano-features { grid-template-columns: 1fr; }
+  .kano-feature { border-left: none; border-top: 1px solid #e4e9f1; padding: 28px 0; }
+  .kano-feature:first-child { border-top: none; padding-top: 0; }
   .kano-feature-icon { margin-bottom: 14px; }
   .kano-faq { grid-template-columns: 1fr; gap: 32px; }
-  .kano-footer { flex-direction: column; padding-block: 28px; }
+  .kano-footer { flex-direction: column; padding-block: 32px; }
   .kano-footer-links { gap: 14px; }
-  .kano-auth { grid-template-columns: 1fr; min-height: auto; max-width: 480px; padding-block: 35px 60px; gap: 28px; }
-  .kano-auth-aside h1 { font-size: 30px; }
-  .kano-auth-aside img { display: none; }
+  .kano-auth { padding-block: 48px 72px; }
+  .kano-auth-orb { width: 72px; margin-bottom: 18px; }
+  .kano-auth-subtitle { margin-bottom: 32px; }
   .kano-auth-panel { padding: 28px 22px; border-radius: 18px; }
-  .kano-account { padding-block: 25px 60px; }
-  .kano-account-heading { align-items: start; flex-direction: column; gap: 10px; padding-bottom: 12px; }
-  .kano-account-heading h1 { font-size: 30px; }
+  .kano-account { padding-block: 32px 64px; }
+  .kano-account-heading { align-items: start; flex-direction: column; gap: 10px; padding-bottom: 16px; }
   .kano-panel { padding: 24px 20px; }
   .kano-account-row { gap: 12px; align-items: start; }
 }
-@media (prefers-reduced-motion: reduce) { .kano-appear { animation: none; } .kano-primary-link { transition: none; } .kano-primary-link:hover { transform: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .kano-appear, .kano-hero-orb > *, .kano-hero h1, .kano-hero-description, .kano-hero-actions { animation: none; }
+  .kano-hero-glow { animation: none; }
+  .kano-reveal { opacity: 1; transform: none; transition: none; }
+  .kano-primary-link { transition: none; }
+  .kano-primary-link:hover { transform: none; }
+}

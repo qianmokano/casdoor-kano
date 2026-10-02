@@ -1,6 +1,7 @@
 const organization = {
   owner: "admin", name: "kano", displayName: "Kano 通行证",
   passwordObfuscatorType: "Plain",
+  favicon: "/kano/logo.png",
   passwordOptions: [], mfaItems: [], languages: ["zh", "en"], accountItems: [],
 };
 const user = {
@@ -67,6 +68,7 @@ describe("Kano customer portal", () => {
     }).as("slowAccount");
     cy.visit("/", {onBeforeLoad(window) { window.localStorage.clear(); }});
     cy.contains("h1", "一个账户，连接 Kano 服务。", {timeout: 3000}).should("be.visible");
+    cy.title().should("eq", "Kano 通行证");
     cy.wait("@slowAccount");
     cy.contains("h1", "一个账户，连接 Kano 服务。").should("be.visible");
   });
@@ -76,6 +78,7 @@ describe("Kano customer portal", () => {
     visit("/");
     cy.location("pathname").should("eq", "/account");
     cy.contains("h1", "账户与安全").should("be.visible");
+    cy.title().should("eq", "Kano 通行证 · 账户与安全");
   });
 
   for (const width of [375, 768, 1440]) {
@@ -84,6 +87,10 @@ describe("Kano customer portal", () => {
       cy.viewport(width, 900);
       visit("/");
       cy.contains("h1", "一个账户，连接 Kano 服务。").should("be.visible");
+      cy.get(".kano-brand-image").should("be.visible").and(($image) => {
+        expect($image[0].naturalWidth).to.be.greaterThan(0);
+      });
+      cy.get("head link[rel=icon]").should("have.attr", "href", "/kano/logo.png");
       cy.contains("summary", "进入另一个服务时需要重新登录吗？").click();
       cy.contains("各自管理登录会话").should("be.visible");
       noOverflow();
@@ -96,6 +103,9 @@ describe("Kano customer portal", () => {
     visit("/account");
     cy.location("pathname").should("eq", "/login/kano");
     cy.get(".kano-auth-panel").should("be.visible");
+    cy.title().should("eq", "Kano 通行证 · 登录");
+    cy.get("head link[rel=icon]").should("have.attr", "href", "/kano/logo.png");
+    cy.get("head link[rel=apple-touch-icon]").should("have.attr", "href", "/kano/logo.png");
     cy.contains("a", "忘记密码").should("have.attr", "href", "/forget/kano");
   });
 
@@ -103,6 +113,7 @@ describe("Kano customer portal", () => {
     fixture();
     visit("/account");
     cy.contains("h1", "账户与安全").should("be.visible");
+    cy.get("head link[rel=icon]").should("have.attr", "href", "/kano/logo.png");
     cy.contains("demo@example.com").should("be.visible");
     cy.get("input[type=email]").should("not.exist");
     cy.get("main").should("not.contain", "stable-demo-subject");
@@ -225,6 +236,8 @@ describe("Kano customer portal", () => {
     cy.get("#passcode").should("have.value", "").type("123456{enter}");
     cy.wait("@verifyMfa");
     cy.get("code").should("contain", "local-recovery-fixture");
+    cy.title().should("eq", "Kano 通行证 · 双重验证");
+    cy.screenshot("kano-mfa-setup", {capture: "fullPage"});
     cy.contains("button", /^启用$/).should("be.disabled");
     cy.get("input[type=checkbox]").check();
     cy.contains("button", /^启用$/).click();
