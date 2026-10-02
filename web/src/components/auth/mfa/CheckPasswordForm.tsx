@@ -20,6 +20,9 @@ export function CheckPasswordForm({
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (loading || password === "") {
+      return;
+    }
     setLoading(true);
     UserBackend.checkUserPassword({...user, password})
       .then((res: any) => {
@@ -29,6 +32,7 @@ export function CheckPasswordForm({
           onFail(res);
         }
       })
+      .catch(() => onFail({msg: i18next.t("general:Failed to connect to server")}))
       .finally(() => {
         setPassword("");
         setLoading(false);
@@ -36,7 +40,7 @@ export function CheckPasswordForm({
   };
 
   return (
-    <form className="mx-auto w-[300px] space-y-4" onSubmit={submit}>
+    <form className="mx-auto w-full max-w-[300px] space-y-4" onSubmit={submit}>
       <div className="relative">
         <Lock className="pointer-events-none absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
         <Input
@@ -44,12 +48,13 @@ export function CheckPasswordForm({
           type="password"
           className="pl-8"
           autoComplete="current-password"
+          aria-label={i18next.t("general:Password")}
           value={password}
           placeholder={i18next.t("general:Password")}
           onChange={(e) => setPassword(e.target.value)}
         />
       </div>
-      <Button type="submit" className="w-full" loading={loading}>
+      <Button type="submit" className="w-full" loading={loading} disabled={!password}>
         {i18next.t("forget:Next Step")}
       </Button>
     </form>

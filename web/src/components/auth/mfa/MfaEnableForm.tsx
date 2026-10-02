@@ -4,6 +4,7 @@ import {Copy} from "lucide-react";
 import {Button} from "@/components/ui/button";
 import * as MfaBackend from "@/backend/MfaBackend";
 import * as Setting from "@/lib/setting";
+import {useTranslation} from "react-i18next";
 
 /** Step 3 of the MFA wizard: show the recovery code and turn MFA on. */
 export function MfaEnableForm({
@@ -13,6 +14,7 @@ export function MfaEnableForm({
   recoveryCodes,
   dest,
   countryCode,
+  requireRecoveryAcknowledgment = false,
   onSuccess,
   onFail,
 }: {
@@ -22,10 +24,13 @@ export function MfaEnableForm({
   recoveryCodes?: string[];
   dest?: string;
   countryCode?: string;
+  requireRecoveryAcknowledgment?: boolean;
   onSuccess: (res: any) => void;
   onFail: (res: any) => void;
 }) {
   const [loading, setLoading] = React.useState(false);
+  const [saved, setSaved] = React.useState(false);
+  const {t} = useTranslation("kano");
   const recoveryCode = recoveryCodes?.[0] ?? "";
 
   const enable = () => {
@@ -38,6 +43,7 @@ export function MfaEnableForm({
           onFail(res);
         }
       })
+      .catch(() => onFail({msg: i18next.t("general:Failed to connect to server")}))
       .finally(() => setLoading(false));
   };
 
@@ -60,7 +66,8 @@ export function MfaEnableForm({
           <Copy />
         </Button>
       </div>
-      <Button className="w-full" loading={loading} onClick={enable}>
+      {requireRecoveryAcknowledgment ? <label className="flex items-start gap-3 text-sm"><input type="checkbox" className="mt-1" checked={saved} onChange={(e) => setSaved(e.target.checked)} />{t("I have saved my recovery code")}</label> : null}
+      <Button className="w-full" loading={loading} disabled={requireRecoveryAcknowledgment && !saved} onClick={enable}>
         {i18next.t("general:Enable")}
       </Button>
     </div>

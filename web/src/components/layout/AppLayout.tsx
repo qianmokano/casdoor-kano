@@ -13,6 +13,8 @@ import {AppSidebar} from "@/components/layout/Sidebar";
 import {useAccount} from "@/hooks/use-account";
 import {useAccountHelmet, useThemeData} from "@/hooks/use-application-chrome";
 import * as Setting from "@/lib/setting";
+import {KanoLayout} from "@/components/kano/KanoLayout";
+import {isKanoCustomer} from "@/lib/kano";
 
 /**
  * `SidebarProvider` persists the rail through its own `sidebar_state` cookie, so
@@ -28,12 +30,16 @@ function readSidebarCookie(): boolean {
   }
 }
 
-export function AppLayout() {
+export function AppLayout({children}: {children?: React.ReactNode} = {}) {
   const {account} = useAccount();
   const palette = useCommandPalette();
   // the console follows the signed-in user's organization theme, title and favicon
   useThemeData(Setting.getThemeData(account?.organization, null));
   useAccountHelmet(account);
+
+  if (isKanoCustomer(account)) {
+    return <KanoLayout><React.Suspense fallback={<Loading />}>{children ?? <Outlet />}</React.Suspense></KanoLayout>;
+  }
 
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-background">
@@ -53,7 +59,7 @@ export function AppLayout() {
             <div className="mx-auto w-full max-w-[1600px] p-4 md:p-6">
               {/* keeps a lazy page's suspension from tearing down the console chrome */}
               <React.Suspense fallback={<Loading />}>
-                <Outlet />
+                {children ?? <Outlet />}
               </React.Suspense>
             </div>
           </main>

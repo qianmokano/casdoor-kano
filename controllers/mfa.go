@@ -57,6 +57,18 @@ func (c *ApiController) MfaSetupInitiate() {
 		c.ResponseError("User doesn't exist")
 		return
 	}
+	var kanoState *kanoMfaSetup
+	if c.isKanoMfaCustomer(user) {
+		kanoState, err = c.getKanoMfaSetup(user)
+		if err != nil {
+			c.ResponseError(err.Error())
+			return
+		}
+		if mfaType != object.TotpType || user.GetMfaProps(mfaType, false).Enabled {
+			c.ResponseError("Please manage an existing factor before setting up a new authenticator")
+			return
+		}
+	}
 
 	organization, err := object.GetOrganizationByUser(user)
 	if err != nil {
@@ -80,6 +92,11 @@ func (c *ApiController) MfaSetupInitiate() {
 	recoveryCode := util.GenerateUUID()
 	mfaProps.RecoveryCodes = []string{recoveryCode}
 	mfaProps.MfaRememberInHours = organization.MfaRememberInHours
+	if kanoState != nil {
+		kanoState.Props = mfaProps
+		kanoState.Verified = false
+		c.saveKanoMfaSetup(kanoState)
+	}
 
 	resp := mfaProps
 	c.ResponseOk(resp)
@@ -172,10 +189,27 @@ func (c *ApiController) MfaSetupVerify() {
 	}
 
 	verifiedDest := getMfaSetupDest(mfaType, dest, countryCode)
+	var kanoState *kanoMfaSetup
+	if c.isKanoMfaCustomer(user) {
+		kanoState, err = c.getKanoMfaSetup(user)
+		if err != nil {
+			c.ResponseError(err.Error())
+			return
+		}
+		if kanoState.Props == nil || kanoState.Props.MfaType != mfaType || kanoState.Props.Secret != secret {
+			c.ResponseError("Please restart authenticator setup")
+			return
+		}
+		mfaUtil = object.GetMfaUtil(mfaType, kanoState.Props)
+	}
 	err = object.VerifyMfaWithLimit(user, func() error { return mfaUtil.SetupVerify(passcode, c.GetAcceptLanguage()) }, c.GetAcceptLanguage())
 	if err != nil {
 		c.ResponseError(err.Error())
 	} else {
+		if kanoState != nil {
+			kanoState.Verified = true
+			c.saveKanoMfaSetup(kanoState)
+		}
 		c.SetSession(mfaSetupVerifiedDestSession, verifiedDest)
 		c.ResponseOk(http.StatusText(http.StatusOK))
 	}
@@ -305,6 +339,20 @@ func (c *ApiController) MfaSetupEnable() {
 	if !c.checkMfaSetupDest(user, mfaType) {
 		return
 	}
+	if c.isKanoMfaCustomer(user) {
+		state, stateErr := c.getKanoMfaSetup(user)
+		if stateErr != nil {
+			c.ResponseError(stateErr.Error())
+			return
+		}
+		if !state.Verified || state.Props == nil || state.Props.MfaType != mfaType || state.Props.Secret != secret || user.GetMfaProps(mfaType, false).Enabled {
+			c.ResponseError("Please verify your authenticator before enabling it")
+			return
+		}
+		// Use the server-issued recovery code, not a client-supplied replacement.
+		mfaUtil = object.GetMfaUtil(mfaType, state.Props)
+		c.DelSession(kanoMfaSetupSession)
+	}
 
 	err = mfaUtil.Enable(user)
 	if err != nil {
@@ -338,12 +386,24 @@ func (c *ApiController) DeleteMfa() {
 		c.ResponseError("User doesn't exist")
 		return
 	}
+	if !c.IsAdminOrSelf(user) {
+		c.ResponseError(c.T("auth:Unauthorized operation"))
+		return
+	}
+	if c.isKanoMfaCustomer(user) {
+		if err = c.verifyKanoMfaRemoval(user); err != nil {
+			c.ResponseError(err.Error())
+			return
+		}
+	}
 
 	err = object.DisabledMultiFactorAuth(user)
 	if err != nil {
 		c.ResponseError(err.Error())
 		return
 	}
+	c.DelSession(kanoMfaSetupSession)
+	c.DelSession(kanoMfaRecoverySession)
 
 	c.ResponseOk(object.GetAllMfaProps(user, true))
 }
@@ -370,6 +430,10 @@ func (c *ApiController) SetPreferredMfa() {
 	}
 	if user == nil {
 		c.ResponseError("User doesn't exist")
+		return
+	}
+	if !c.IsAdminOrSelf(user) {
+		c.ResponseError(c.T("auth:Unauthorized operation"))
 		return
 	}
 

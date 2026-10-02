@@ -124,6 +124,7 @@ export function PasswordModal({user, userName, organization, account, disabled, 
           Setting.showMessage("error", i18next.t(`user:${res.msg}`));
         }
       })
+      .catch(() => Setting.showMessage("error", i18next.t("general:Failed to connect to server")))
       .finally(() => setSubmitting(false));
   };
 

@@ -585,6 +585,10 @@ func (c *ApiController) ResetEmailOrPhone() {
 	destType := c.Ctx.Request.Form.Get("type")
 	dest := c.Ctx.Request.Form.Get("dest")
 	code := c.Ctx.Request.Form.Get("code")
+	if destType == object.VerifyTypeEmail && object.IsKanoCustomer(user) {
+		c.ResponseError(object.ErrKanoEmailReadOnly.Error())
+		return
+	}
 
 	if util.IsStringsEmpty(destType, dest, code) {
 		c.ResponseError(c.T("general:Missing parameter"))

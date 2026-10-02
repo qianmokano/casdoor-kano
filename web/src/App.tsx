@@ -21,9 +21,11 @@ import {useAccount} from "@/hooks/use-account";
 import * as Auth from "@/auth/Auth";
 import * as Conf from "@/Conf";
 import * as Setting from "@/lib/setting";
+import {isKanoCustomer} from "@/lib/kano";
 
 // ---- console pages -----------------------------------------------------------
 const Dashboard = React.lazy(() => import("@/pages/Dashboard"));
+const KanoHomePage = React.lazy(() => import("@/pages/KanoHomePage"));
 const NotFoundPage = React.lazy(() => import("@/pages/NotFoundPage"));
 const AppListPage = React.lazy(() => import("@/pages/AppListPage"));
 const ShortcutsPage = React.lazy(() => import("@/pages/ShortcutsPage"));
@@ -174,7 +176,8 @@ function RequireAuth({children}: {children: React.ReactNode}) {
   }
   if (account === null) {
     const lastOrg = localStorage.getItem("lastLoginOrg");
-    const to = lastOrg && lastOrg !== "built-in" ? `/login/${lastOrg}` : "/login";
+    const customerAccount = location.pathname === "/account" || location.pathname.startsWith("/mfa/setup");
+    const to = customerAccount ? "/login/kano" : lastOrg && lastOrg !== "built-in" ? `/login/${lastOrg}` : "/login";
     return <Navigate to={to} replace state={{from: location.pathname + location.search}} />;
   }
   // the console stays closed until a flagged account has picked a new password
@@ -194,14 +197,38 @@ function RequireConsoleAccess({children}: {children: React.ReactNode}) {
   const {account} = useAccount();
   const location = useLocation();
 
+  if (isKanoCustomer(account) && location.pathname !== "/account" && !location.pathname.startsWith("/mfa/setup")) {
+    return <Navigate to="/account" replace />;
+  }
+
   if (
     account?.organization?.disableConsole &&
     !Setting.isLocalAdminUser(account) &&
+    !(isKanoCustomer(account) && location.pathname === "/account") &&
     !location.pathname.startsWith("/mfa/setup")
   ) {
     return <ConsoleDisabledPage />;
   }
   return <>{children}</>;
+}
+
+function UserProfilePage() {
+  const {account} = useAccount();
+  return isKanoCustomer(account) ? <Navigate to="/account" replace /> : <UserEditPage />;
+}
+
+function HomePage() {
+  const {account, loading} = useAccount();
+  if (loading || account === undefined) {
+    return <Loading className="min-h-screen" />;
+  }
+  if (account === null) {
+    return <KanoHomePage />;
+  }
+  if (isKanoCustomer(account)) {
+    return <Navigate to="/account" replace />;
+  }
+  return <RequireAuth><RequireConsoleAccess><AppLayout><Dashboard /></AppLayout></RequireConsoleAccess></RequireAuth>;
 }
 
 export default function App() {
@@ -210,6 +237,7 @@ export default function App() {
   return (
     <React.Suspense fallback={<Loading className="min-h-screen" />}>
       <Routes>
+        <Route path="/" element={<HomePage />} />
         {/* Authentication */}
         <Route path="/login" element={<LoginPage type="login" />} />
         <Route path="/login/:owner" element={<LoginPage type="login" />} />
@@ -252,7 +280,6 @@ export default function App() {
             </RequireAuth>
           }
         >
-          <Route path="/" element={<Dashboard />} />
           <Route path="/apps" element={<AppListPage />} />
           <Route path="/shortcuts" element={<ShortcutsPage />} />
           <Route path="/account" element={<AccountPage />} />
@@ -263,7 +290,7 @@ export default function App() {
           <Route path="/organizations/:organizationName" element={<OrganizationEditPage />} />
           <Route path="/organizations/:organizationName/users" element={<UserListPage />} />
           <Route path="/users" element={<UserListPage />} />
-          <Route path="/users/:organizationName/:userName" element={<UserEditPage />} />
+          <Route path="/users/:organizationName/:userName" element={<UserProfilePage />} />
           <Route path="/groups" element={<GroupListPage />} />
           <Route path="/groups/:organizationName/:groupName" element={<GroupEditPage />} />
           <Route path="/trees/:organizationName" element={<GroupTreePage />} />
