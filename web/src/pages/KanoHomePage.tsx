@@ -20,7 +20,7 @@ export default function KanoHomePage() {
   const {t} = useTranslation("kano");
   return (
     <KanoLayout publicPage>
-      <section className="kano-container kano-hero kano-appear">
+      <section className="kano-container kano-hero">
         <div>
           <p className="kano-eyebrow">KANO PASSPORT</p>
           <h1>{t("One account. Connected to Kano.")}</h1>

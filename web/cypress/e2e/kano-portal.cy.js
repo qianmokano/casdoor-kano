@@ -282,7 +282,8 @@ describe("Kano customer portal", () => {
     visit("/");
     cy.then(() => Cypress.automation("remote:debugger:protocol", {command: "Emulation.setEmulatedMedia",
       params: {features: [{name: "prefers-reduced-motion", value: "reduce"}]}}));
-    cy.get(".kano-appear").should("have.css", "animation-name", "none");
+    cy.get(".kano-hero").should("have.css", "animation-name", "none");
+    cy.get(".kano-primary-link").should("have.css", "transition-duration", "0s");
     cy.get(".kano-skip-link").focus().should("be.visible");
     pressEnter();
     cy.location("hash").should("eq", "#kano-main");
