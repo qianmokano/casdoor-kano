@@ -31,10 +31,16 @@ func TestKanoPublicIndexAssets(t *testing.T) {
 			serveFileWithReplace(response, httptest.NewRequest("GET", test.path, nil), path, theme)
 			body := response.Body.String()
 			if test.public {
-				for _, expected := range []string{"Kano 通行证", `rel="icon" href="/kano/logo.png"`, `rel="apple-touch-icon" href="/kano/logo.png"`, `imagesrcset=`, `imagesizes=`, `fetchpriority="high"`} {
+				for _, expected := range []string{"Kano 通行证", `rel="icon" href="/kano/logo.png"`, `rel="apple-touch-icon" href="/kano/logo.png"`} {
 					if !strings.Contains(body, expected) {
 						t.Errorf("missing public asset metadata: %s", expected)
 					}
+				}
+				if strings.Contains(body, "hero-") {
+					t.Error("public homepage preloads a hero image that is no longer built")
+				}
+				if strings.Contains(body, "账户与安全") {
+					t.Error("public homepage carries the account page title")
 				}
 				if strings.Contains(body, "https://cdn.casbin.org") || strings.Contains(body, theme.Favicon) {
 					t.Error("public homepage requested another organization's favicon")
