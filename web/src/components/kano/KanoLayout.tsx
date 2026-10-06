@@ -16,7 +16,7 @@ export function KanoLayout({children, publicPage = false, application}: {
   publicPage?: boolean;
   application?: any;
 }) {
-  const {t} = useTranslation("kano");
+  const {t, i18n} = useTranslation("kano");
   const {pathname} = useLocation();
   const {account} = useAccount();
   const [publicApplication, setPublicApplication] = React.useState<any>(null);
@@ -58,6 +58,19 @@ export function KanoLayout({children, publicPage = false, application}: {
     };
   }, []);
 
+  // index.html is a static lang="en"; keep <html lang> honest while the portal
+  // is mounted so :lang(zh) styles and screen readers see the real language.
+  React.useEffect(() => {
+    const previous = document.documentElement.lang;
+    const sync = () => { document.documentElement.lang = i18n.language; };
+    sync();
+    i18n.on("languageChanged", sync);
+    return () => {
+      i18n.off("languageChanged", sync);
+      document.documentElement.lang = previous;
+    };
+  }, [i18n]);
+
   // Kano is not the console: its tab title names the portal section, not the account page.
   React.useEffect(() => {
     const previous = document.title;
@@ -87,7 +100,7 @@ export function KanoLayout({children, publicPage = false, application}: {
       window.removeEventListener("scroll", onScroll);
       revealObserver.disconnect();
     };
-  }, []);
+  }, [pathname]);
 
   return (
     <div className="kano-portal">
