@@ -7,6 +7,7 @@ import {Button} from "@/components/ui/button";
 import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle} from "@/components/ui/dialog";
 import {Input} from "@/components/ui/input";
 import {Label} from "@/components/ui/label";
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {Loading} from "@/components/common/Loading";
 import {PasswordModal} from "@/components/user/PasswordModal";
 import {CropperDivModal} from "@/components/user/CropperDivModal";
@@ -78,7 +79,7 @@ function RemoveMfaDialog({user, factors, application, onRemoved}: {
           <DialogHeader><DialogTitle>{t("Turn off two-step verification?")}</DialogTitle><DialogDescription>{t("This turns off all enabled factors. Confirm your current password and a verification code or recovery code.")}</DialogDescription></DialogHeader>
           <form className="space-y-5" onSubmit={submit}>
             <div className="space-y-2"><Label htmlFor="kano-mfa-password">{t("Current password")}</Label><Input id="kano-mfa-password" required autoComplete="current-password" type="password" value={password} disabled={saving} onChange={(e) => setPassword(e.target.value)} /></div>
-            {!recovery && factors.length > 1 ? <div className="space-y-2"><Label htmlFor="kano-mfa-factor">{t("Verification method")}</Label><select id="kano-mfa-factor" className="h-10 w-full rounded-md border bg-white px-3 text-sm" value={factor} disabled={saving} onChange={(e) => { setFactor(e.target.value); setCode(""); }}>{factors.map((item) => <option key={item.mfaType} value={item.mfaType}>{t(factorLabels[item.mfaType] ?? item.mfaType)}</option>)}</select></div> : null}
+            {!recovery && factors.length > 1 ? <div className="space-y-2"><Label htmlFor="kano-mfa-factor">{t("Verification method")}</Label><Select value={factor} disabled={saving} onValueChange={(value) => { setFactor(value); setCode(""); }}><SelectTrigger id="kano-mfa-factor" className="w-full"><SelectValue /></SelectTrigger><SelectContent>{factors.map((item) => <SelectItem key={item.mfaType} value={item.mfaType}>{t(factorLabels[item.mfaType] ?? item.mfaType)}</SelectItem>)}</SelectContent></Select></div> : null}
             <div className="space-y-2">
               <Label htmlFor="kano-mfa-code">{t(recovery ? "mfa:Recovery code" : "login:Verification code")}</Label>
               {codeFactor && application ? <SendCodeInput value={code} onChange={setCode} method={mfaAuth} destType={factor === "email" ? "email" : "phone"} dest={factor === "email" ? user.email : user.phone} countryCode={user.countryCode} application={application} applicationId={Setting.getApplicationName(application)} checkUser={user.name} /> : <Input id="kano-mfa-code" required autoComplete="one-time-code" inputMode={recovery ? "text" : "numeric"} value={code} disabled={saving} onChange={(e) => setCode(e.target.value)} />}

@@ -22,7 +22,7 @@ html[data-kano-portal], .kano-portal {
 .kano-portal {
   min-height: 100svh; display: flex; flex-direction: column;
   overflow-x: clip;
-  color: #0f1722; background: #fbfcfe;
+  color: hsl(var(--foreground)); background: hsl(var(--background));
   font-family: "Inter Variable", -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
   -webkit-font-smoothing: antialiased;
 }
@@ -31,24 +31,24 @@ html[data-kano-portal], .kano-portal {
 /* ---- header -------------------------------------------------------------- */
 .kano-header {
   position: sticky; top: 0; z-index: 50;
-  background: rgba(251, 252, 254, .72);
+  background: hsl(var(--background) / .72);
   backdrop-filter: saturate(180%) blur(16px);
   -webkit-backdrop-filter: saturate(180%) blur(16px);
   transition: border-color .25s, box-shadow .25s;
   border-bottom: 1px solid transparent;
 }
-.kano-header-scrolled { border-bottom-color: #e4e9f1; }
+.kano-header-scrolled { border-bottom-color: hsl(var(--border)); }
 .kano-header-inner { display: flex; justify-content: space-between; align-items: center; min-height: 64px; gap: 24px; }
 .kano-brand { display: flex; align-items: center; gap: 10px; font-size: 17px; font-weight: 600; letter-spacing: -.02em; white-space: nowrap; }
 .kano-brand-image { width: 28px; height: 28px; flex-shrink: 0; object-fit: contain; }
-.kano-brand-subtitle { font-size: 14px; margin-left: 2px; font-weight: 400; color: #5c6675; }
+.kano-brand-subtitle { font-size: 14px; margin-left: 2px; font-weight: 400; color: hsl(var(--muted-foreground)); }
 .kano-nav { display: flex; align-items: center; gap: 26px; font-size: 13px; }
-.kano-nav a { color: #3d4654; transition: color .2s; }
-.kano-nav a:hover { color: #0f1722; }
-.kano-nav-login { border-radius: 999px; padding: 8px 18px; background: #0f1722; color: #fff !important; transition: background .2s !important; }
-.kano-nav-login:hover { background: #2e6bff; }
+.kano-nav a { color: hsl(var(--foreground) / .78); transition: color .2s; }
+.kano-nav a:hover { color: hsl(var(--foreground)); }
+.kano-nav-login { border-radius: 999px; padding: 8px 18px; background: hsl(var(--foreground)); color: hsl(var(--primary-foreground)) !important; transition: background .2s !important; }
+.kano-nav-login:hover { background: hsl(var(--primary)); }
 .kano-main { flex: 1; outline: none; }
-.kano-skip-link { position: fixed; top: 12px; left: 12px; z-index: 100; transform: translateY(-150%); padding: 12px; background: #0f1722; color: white; border-radius: 8px; }
+.kano-skip-link { position: fixed; top: 12px; left: 12px; z-index: 100; transform: translateY(-150%); padding: 12px; background: hsl(var(--foreground)); color: hsl(var(--primary-foreground)); border-radius: 8px; }
 .kano-skip-link:focus { transform: none; }
 
 /* ---- hero ---------------------------------------------------------------- */
@@ -59,7 +59,7 @@ html[data-kano-portal], .kano-portal {
 .kano-hero-glow {
   position: absolute; top: 6%; left: 50%; width: 620px; height: 620px;
   transform: translateX(-50%); pointer-events: none;
-  background: radial-gradient(circle, rgba(46, 107, 255, .14) 0%, rgba(46, 107, 255, .05) 42%, transparent 68%);
+  background: radial-gradient(circle, hsl(var(--primary) / .14) 0%, hsl(var(--primary) / .05) 42%, transparent 68%);
   animation: kano-glow-drift 14s ease-in-out infinite alternate;
 }
 @keyframes kano-glow-drift {
@@ -72,24 +72,25 @@ html[data-kano-portal], .kano-portal {
   border-radius: 50%;
   background:
     radial-gradient(circle at 32% 26%, rgba(255, 255, 255, .95), rgba(255, 255, 255, 0) 44%),
-    radial-gradient(circle at 66% 76%, #1b3fa0, #2e6bff 58%, #a9c4ff 100%);
-  box-shadow: 0 30px 80px -24px rgba(46, 107, 255, .35), inset 0 0 60px rgba(255, 255, 255, .25);
+    radial-gradient(circle at 66% 76%, #1b3fa0, hsl(var(--primary)) 58%, #a9c4ff 100%);
+  box-shadow: 0 30px 80px -24px hsl(var(--primary) / .35), inset 0 0 60px rgba(255, 255, 255, .25);
 }
 .kano-hero h1 {
   font-size: clamp(38px, 5.2vw, 60px); line-height: 1.18; letter-spacing: -.03em;
   font-weight: 600; max-width: 14em; margin: 0; text-wrap: balance;
 }
-.kano-hero-description { max-width: 480px; color: #5c6675; line-height: 1.85; font-size: 16px; margin: 22px 0 36px; text-wrap: balance; }
+.kano-hero-description { max-width: 480px; color: hsl(var(--muted-foreground)); line-height: 1.85; font-size: 16px; margin: 22px 0 36px; text-wrap: balance; }
 .kano-hero-actions { display: flex; align-items: center; gap: 22px; }
-.kano-hero-actions > a:not(.kano-primary-link) { color: #3d4654; font-size: 14px; transition: color .2s; }
-.kano-hero-actions > a:not(.kano-primary-link):hover { color: #2e6bff; }
+.kano-hero-actions > a:not(.kano-primary-link) { color: hsl(var(--foreground) / .78); font-size: 14px; transition: color .2s; }
+.kano-hero-actions > a:not(.kano-primary-link):hover { color: hsl(var(--primary)); }
 .kano-primary-link {
   display: inline-flex; align-items: center; gap: 12px; padding: 15px 28px; border-radius: 999px;
-  background: #2e6bff; color: white; font-size: 15px; font-weight: 500;
-  box-shadow: 0 12px 32px -12px rgba(46, 107, 255, .45);
+  background: hsl(var(--primary)); color: hsl(var(--primary-foreground)); font-size: 15px; font-weight: 500;
+  box-shadow: 0 12px 32px -12px hsl(var(--primary) / .45);
   transition: background .2s, transform .2s, box-shadow .2s;
 }
-.kano-primary-link:hover { background: #1f55d6; transform: translateY(-2px); box-shadow: 0 18px 40px -12px rgba(46, 107, 255, .5); }
+.kano-primary-link:hover { background: #1f55d6; transform: translateY(-2px); box-shadow: 0 18px 40px -12px hsl(var(--primary) / .5); }
+.kano-primary-link:focus-visible { outline: 2px solid hsl(var(--ring)); outline-offset: 3px; }
 
 /* ---- entrance choreography (one orchestrated moment) --------------------- */
 .kano-hero-orb > * { animation: kano-orb-in .9s cubic-bezier(.22, 1, .36, 1) both; }
@@ -103,80 +104,91 @@ html[data-kano-portal], .kano-portal {
 .kano-appear { animation: kano-rise .7s ease-out both; }
 
 /* ---- sections ------------------------------------------------------------ */
-.kano-section { padding-block: 96px; border-top: 1px solid #e4e9f1; scroll-margin-top: 64px; }
+.kano-section { padding-block: 96px; border-top: 1px solid hsl(var(--border)); scroll-margin-top: 64px; }
 .kano-section-heading { display: flex; justify-content: space-between; gap: 30px; align-items: end; margin-bottom: 56px; }
 .kano-section h2 { font-size: clamp(28px, 3vw, 36px); line-height: 1.3; letter-spacing: -.025em; font-weight: 600; margin: 0; }
-.kano-section-description { max-width: 360px; font-size: 14px; line-height: 1.85; color: #5c6675; margin: 0; }
+.kano-section-description { max-width: 360px; font-size: 14px; line-height: 1.85; color: hsl(var(--muted-foreground)); margin: 0; }
 .kano-features { display: grid; grid-template-columns: repeat(3, 1fr); }
-.kano-feature { padding: 4px 44px; border-left: 1px solid #e4e9f1; }
+.kano-feature { padding: 4px 44px; border-left: 1px solid hsl(var(--border)); }
 .kano-feature:first-child { border-left: none; padding-left: 0; }
-.kano-feature-icon { width: 40px; height: 40px; display: grid; place-items: center; color: #2e6bff; margin-bottom: 22px; }
+.kano-feature-icon { width: 40px; height: 40px; display: grid; place-items: center; color: hsl(var(--primary)); margin-bottom: 22px; }
 .kano-feature h3 { font-size: 17px; font-weight: 600; letter-spacing: -.01em; margin: 0 0 12px; }
-.kano-feature p { font-size: 14px; color: #5c6675; line-height: 1.85; margin: 0; }
+.kano-feature p { font-size: 14px; color: hsl(var(--muted-foreground)); line-height: 1.85; margin: 0; }
 
 /* ---- FAQ ----------------------------------------------------------------- */
 .kano-faq { display: grid; grid-template-columns: .8fr 1.2fr; gap: 80px; }
-.kano-faq details { border-bottom: 1px solid #e4e9f1; padding-block: 22px; }
+.kano-faq details { border-bottom: 1px solid hsl(var(--border)); padding-block: 22px; }
 .kano-faq details:first-child { padding-top: 0; }
 .kano-faq summary { font-size: 15px; font-weight: 500; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; gap: 16px; transition: color .2s; }
-.kano-faq summary:hover { color: #2e6bff; }
+.kano-faq summary:hover { color: hsl(var(--primary)); }
+.kano-faq summary:focus-visible { outline: 2px solid hsl(var(--ring)); outline-offset: 6px; border-radius: 2px; }
 .kano-faq summary::-webkit-details-marker { display: none; }
 .kano-faq summary::after {
   content: ""; width: 8px; height: 8px; flex-shrink: 0;
-  border-right: 1.5px solid #5c6675; border-bottom: 1.5px solid #5c6675;
+  border-right: 1.5px solid hsl(var(--muted-foreground)); border-bottom: 1.5px solid hsl(var(--muted-foreground));
   transform: rotate(45deg) translateY(-2px); transition: transform .25s;
 }
 .kano-faq details[open] summary::after { transform: rotate(225deg) translateY(-2px); }
-.kano-faq details p { color: #5c6675; font-size: 14px; line-height: 1.9; padding-top: 16px; margin: 0; }
+.kano-faq details p { color: hsl(var(--muted-foreground)); font-size: 14px; line-height: 1.9; padding-top: 16px; margin: 0; }
+/* native <details> hides closed content outright, so only the open direction can animate */
+.kano-faq details[open] p { animation: kano-rise .3s cubic-bezier(.22, 1, .36, 1) both; }
 
 /* ---- footer -------------------------------------------------------------- */
-.kano-footer { border-top: 1px solid #e4e9f1; padding-block: 40px; display: flex; align-items: start; justify-content: space-between; gap: 28px; color: #5c6675; font-size: 12px; }
-.kano-footer-brand { font-weight: 600; color: #0f1722; }
+.kano-footer { border-top: 1px solid hsl(var(--border)); padding-block: 40px; display: flex; align-items: start; justify-content: space-between; gap: 28px; color: hsl(var(--muted-foreground)); font-size: 12px; }
+.kano-footer-brand { font-weight: 600; color: hsl(var(--foreground)); }
 .kano-footer p { margin: 8px 0 0; }
 .kano-footer-links { display: flex; flex-wrap: wrap; gap: 20px; align-items: center; }
-.kano-footer-links a { display: flex; align-items: center; gap: 4px; color: #3d4654; transition: color .2s; }
-.kano-footer-links a:hover { color: #2e6bff; }
+.kano-footer-links a { display: flex; align-items: center; gap: 4px; color: hsl(var(--foreground) / .78); transition: color .2s; }
+.kano-footer-links a:hover { color: hsl(var(--primary)); }
 
 /* ---- auth ---------------------------------------------------------------- */
 .kano-auth { display: flex; flex-direction: column; align-items: center; text-align: center; padding-block: 72px 96px; }
 .kano-auth-orb { width: 96px; aspect-ratio: 1; margin-bottom: 24px; }
 .kano-auth h1 { font-size: clamp(28px, 3.4vw, 38px); font-weight: 600; line-height: 1.3; letter-spacing: -.025em; margin: 0 0 14px; }
-.kano-auth-subtitle { max-width: 400px; color: #5c6675; font-size: 14px; line-height: 1.85; margin: 0 0 40px; }
+.kano-auth-subtitle { max-width: 400px; color: hsl(var(--muted-foreground)); font-size: 14px; line-height: 1.85; margin: 0 0 40px; }
 .kano-auth-panel {
-  width: min(420px, 100%); border: 1px solid #e4e9f1; border-radius: 24px; padding: 36px;
-  background: white; box-shadow: 0 24px 64px -36px rgba(27, 63, 160, .22); text-align: left;
+  width: min(420px, 100%); border: 1px solid hsl(var(--border)); border-radius: 24px; padding: 36px;
+  background: hsl(var(--card)); box-shadow: 0 24px 64px -36px rgba(27, 63, 160, .22); text-align: left;
 }
 .kano-auth-panel .login-form { width: 100%; }
-.kano-auth-panel input { background: white; }
+.kano-auth-panel input { background: hsl(var(--card)); }
 .kano-auth-panel button[type="submit"] { border-radius: 10px; }
-.kano-auth-footer { margin-top: 24px; font-size: 13px; color: #5c6675; text-align: center; }
+.kano-auth-footer { margin-top: 24px; font-size: 13px; color: hsl(var(--muted-foreground)); text-align: center; }
 
 /* ---- account ------------------------------------------------------------- */
 .kano-account { max-width: 850px; padding-block: 56px 96px; }
 .kano-account-heading { display: flex; gap: 24px; justify-content: space-between; align-items: end; padding-bottom: 36px; }
 .kano-account-heading h1 { font-size: clamp(30px, 3.4vw, 38px); line-height: 1.3; font-weight: 600; letter-spacing: -.025em; margin: 0 0 14px; }
-.kano-account-subtitle { color: #5c6675; line-height: 1.85; font-size: 14px; max-width: 550px; margin: 0; }
+.kano-account-subtitle { color: hsl(var(--muted-foreground)); line-height: 1.85; font-size: 14px; max-width: 550px; margin: 0; }
 .kano-panel {
-  background: white; border: 1px solid #e4e9f1; border-radius: 20px; margin-top: 24px; padding: 28px 32px;
+  background: hsl(var(--card)); border: 1px solid hsl(var(--border)); border-radius: 20px; margin-top: 24px; padding: 28px 32px;
   box-shadow: 0 16px 48px -36px rgba(27, 63, 160, .16);
 }
 .kano-panel-heading { display: flex; align-items: center; gap: 12px; padding-bottom: 22px; }
 .kano-panel-heading h2 { font-size: 17px; font-weight: 600; letter-spacing: -.01em; }
-.kano-panel-heading svg { width: 18px; color: #2e6bff; }
-.kano-account-row { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding-block: 22px; border-top: 1px solid #eef1f6; }
+.kano-panel-heading svg { width: 18px; color: hsl(var(--primary)); }
+.kano-account-row { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding-block: 22px; border-top: 1px solid hsl(var(--border) / .6); }
 .kano-account-row:first-of-type { border-top: none; }
 .kano-row-title { font-size: 14px; font-weight: 500; }
-.kano-row-detail { font-size: 13px; color: #5c6675; line-height: 1.8; margin-top: 7px; overflow-wrap: anywhere; }
+.kano-row-detail { font-size: 13px; color: hsl(var(--muted-foreground)); line-height: 1.8; margin-top: 7px; overflow-wrap: anywhere; }
 .kano-status { font-size: 11px; color: #1b3fa0; background: #eef3ff; border: 1px solid #d9e5ff; border-radius: 999px; padding: 5px 10px; white-space: nowrap; }
-.kano-status-pending { background: #f4f6fa; color: #5c6675; border-color: #e4e9f1; }
+.kano-status-pending { background: hsl(var(--muted)); color: hsl(var(--muted-foreground)); border-color: hsl(var(--border)); }
 .kano-inline-editor { padding-top: 18px; max-width: 400px; }
-.kano-service-link { display: flex; align-items: center; gap: 14px; padding-block: 18px; border-top: 1px solid #eef1f6; transition: color .2s; }
+.kano-service-link { display: flex; align-items: center; gap: 14px; padding-block: 18px; border-top: 1px solid hsl(var(--border) / .6); transition: color .2s; }
 .kano-service-link:first-of-type { border-top: none; }
-.kano-service-link:hover { color: #2e6bff; }
-.kano-service-link > svg:first-child { width: 20px; color: #2e6bff; }
+.kano-service-link:hover { color: hsl(var(--primary)); }
+.kano-service-link > svg:first-child { width: 20px; color: hsl(var(--primary)); }
 .kano-service-link > div { flex: 1; }
-.kano-service-link > svg:last-child { width: 16px; color: #5c6675; }
-.kano-note { margin-top: 24px; font-size: 12px; line-height: 1.9; color: #5c6675; }
+.kano-service-link > svg:last-child { width: 16px; color: hsl(var(--muted-foreground)); }
+.kano-note { margin-top: 24px; font-size: 12px; line-height: 1.9; color: hsl(var(--muted-foreground)); }
+
+/* ---- CJK display type ------------------------------------------------------
+   The Latin-tuned tracking and leading of the headings crush Chinese glyphs,
+   and the portal is zh-first. */
+:lang(zh) .kano-hero h1 { letter-spacing: 0; line-height: 1.4; }
+:lang(zh) .kano-section h2,
+:lang(zh) .kano-auth h1,
+:lang(zh) .kano-account-heading h1 { letter-spacing: 0; line-height: 1.45; }
 
 /* ---- responsive ---------------------------------------------------------- */
 @media (max-width: 900px) {
@@ -200,7 +212,7 @@ html[data-kano-portal], .kano-portal {
   .kano-section { padding-block: 64px; scroll-margin-top: 56px; }
   .kano-section-heading { flex-direction: column; align-items: start; gap: 16px; margin-bottom: 40px; }
   .kano-features { grid-template-columns: 1fr; }
-  .kano-feature { border-left: none; border-top: 1px solid #e4e9f1; padding: 28px 0; }
+  .kano-feature { border-left: none; border-top: 1px solid hsl(var(--border)); padding: 28px 0; }
   .kano-feature:first-child { border-top: none; padding-top: 0; }
   .kano-feature-icon { margin-bottom: 14px; }
   .kano-faq { grid-template-columns: 1fr; gap: 32px; }
@@ -218,6 +230,7 @@ html[data-kano-portal], .kano-portal {
 @media (prefers-reduced-motion: reduce) {
   .kano-appear, .kano-hero-orb > *, .kano-hero h1, .kano-hero-description, .kano-hero-actions { animation: none; }
   .kano-hero-glow { animation: none; }
+  .kano-faq details[open] p { animation: none; }
   .kano-reveal { opacity: 1; transform: none; transition: none; }
   .kano-primary-link { transition: none; }
   .kano-primary-link:hover { transform: none; }

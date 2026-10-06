@@ -53,8 +53,11 @@ export default function KanoHomePage() {
         <h1>{t("One account. Connected to Kano.")}</h1>
         <p className="kano-hero-description">{t("A single place for your identity, password and account security. Simple to use, always yours.")}</p>
         <div className="kano-hero-actions">
-          <Link className="kano-primary-link" to="/account">{t("Manage my account")}<ArrowRight className="h-4 w-4" /></Link>
-          {account ? null : <Link to="/login/kano">{t("Sign in")}</Link>}
+          {account ? (
+            <Link className="kano-primary-link" to="/account">{t("Manage my account")}<ArrowRight className="h-4 w-4" /></Link>
+          ) : (
+            <Link className="kano-primary-link" to="/login/kano">{t("Sign in")}<ArrowRight className="h-4 w-4" /></Link>
+          )}
         </div>
       </section>
       <section id="features" className="kano-container kano-section kano-reveal">
