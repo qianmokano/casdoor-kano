@@ -170,8 +170,11 @@ jobs:
           browser: chrome
           # `yarn install` above already installed everything, Cypress included.
           install: false
-          start: yarn start
-          wait-on: "http://localhost:7001"
+          # 127.0.0.1, not localhost: on the Ubuntu 26 runner image the
+          # `localhost` name resolves IPv6-first, so wait-on fails the step
+          # with "Socket closed before the connection was established"
+          start: yarn start -- --host 127.0.0.1
+          wait-on: "http://127.0.0.1:7001"
           wait-on-timeout: 210
           working-directory: ./web
 

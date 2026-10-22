@@ -91,8 +91,11 @@ jobs:
         with:
           working-directory: web
           install: false
-          start: yarn start
-          wait-on: http://localhost:7001
+          # 127.0.0.1, not localhost: on the Ubuntu 26 runner image the
+          # `localhost` name resolves IPv6-first, so wait-on fails the step
+          # with "Socket closed before the connection was established"
+          start: yarn start -- --host 127.0.0.1
+          wait-on: http://127.0.0.1:7001
           browser: chrome
           spec: cypress/e2e/kano-portal.cy.js,cypress/e2e/login.cy.js
       - name: Save test evidence
