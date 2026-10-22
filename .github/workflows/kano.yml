@@ -37,7 +37,11 @@ jobs:
 
   portal:
     needs: release-config
-    runs-on: ubuntu-latest
+    # ubuntu-24.04, not latest (26): the cypress action's wait-on uses got@11,
+    # which dies on Node 24 ("Socket closed before the connection was
+    # established", cypress-io/github-action#1873) and the 26 image forces
+    # Node 24 on actions. Unpin once the action ships a Node-24-safe wait-on.
+    runs-on: ubuntu-24.04
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
