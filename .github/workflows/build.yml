@@ -165,14 +165,36 @@ jobs:
             echo "Waiting... ($i/60)"
             sleep 1
           done
+      # The dev server is started here instead of via the cypress action's
+      # start/wait-on inputs: the action's wait-on uses got@11, which dies
+      # instantly under the runner's forced Node 24 ("Socket closed before
+      # the connection was established", cypress-io/github-action#1873).
+      # Revert once the action ships a Node-24-safe wait-on.
+      - name: Start frontend dev server for cypress
+        # vite.config.ts reads CASDOOR_BACKEND for its /api proxy target; pass
+        # it explicitly since the dev server no longer inherits the cypress
+        # action's environment. Port 8000 is the backend started above. The
+        # browser side stays on `localhost` — the specs' origins must match it.
+        env:
+          CASDOOR_BACKEND: http://127.0.0.1:8000
+        working-directory: ./web
+        run: |
+          nohup yarn start > /tmp/vite-dev.log 2>&1 &
+          for i in {1..210}; do
+            if curl -fsS http://localhost:7001 > /dev/null; then
+              echo "vite dev server is up"
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "vite dev server failed to start"
+          cat /tmp/vite-dev.log
+          exit 1
       - uses: cypress-io/github-action@v5
         with:
           browser: chrome
           # `yarn install` above already installed everything, Cypress included.
           install: false
-          start: yarn start
-          wait-on: "http://localhost:7001"
-          wait-on-timeout: 210
           working-directory: ./web
 
       - uses: actions/upload-artifact@v4
