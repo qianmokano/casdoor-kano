@@ -100,6 +100,8 @@ func CheckUserSignup(application *Application, organization *Organization, authF
 				return i18n.Translate(lang, "check:Email already exists")
 			} else if !util.IsEmailValid(authForm.Email) {
 				return i18n.Translate(lang, "check:Email is invalid")
+			} else if !util.IsEmailDomainAllowed(authForm.Email, organization.EmailDomains) {
+				return i18n.Translate(lang, "check:The email domain is not allowed to sign up")
 			}
 		}
 	}

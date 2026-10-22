@@ -62,6 +62,27 @@ func IsPhoneAllowInRegin(countryCode string, allowRegions []string) bool {
 	return InSlice(allowRegions, countryCode)
 }
 
+func IsEmailDomainAllowed(email string, allowedDomains []string) bool {
+	if len(allowedDomains) == 0 {
+		return true
+	}
+
+	atIndex := strings.LastIndex(email, "@")
+	if atIndex < 0 || atIndex == len(email)-1 {
+		return false
+	}
+	domain := strings.ToLower(email[atIndex+1:])
+
+	for _, allowedDomain := range allowedDomains {
+		normalized := strings.ToLower(strings.TrimSpace(allowedDomain))
+		normalized = strings.TrimPrefix(normalized, "@")
+		if normalized != "" && normalized == domain {
+			return true
+		}
+	}
+	return false
+}
+
 func IsRegexp(s string) (bool, error) {
 	if _, err := regexp.Compile(s); err != nil {
 		return false, err

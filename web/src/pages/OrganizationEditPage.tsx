@@ -307,6 +307,9 @@ export default function OrganizationEditPage() {
           <FormRow labelKey="organization:Tags">
             <TagsInput value={organization.tags ?? []} onChange={(value) => update("tags", value)} />
           </FormRow>
+          <FormRow labelKey="organization:Email domains">
+            <TagsInput value={organization.emailDomains ?? []} onChange={(value) => update("emailDomains", value)} />
+          </FormRow>
           <FormRow labelKey="general:Enable tour">
             <Switch checked={!!organization.enableTour} onCheckedChange={(v) => update("enableTour", v)} />
           </FormRow>

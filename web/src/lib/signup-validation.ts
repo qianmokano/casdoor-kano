@@ -58,6 +58,21 @@ function isBlank(value: any): boolean {
   return value === undefined || value === null || `${value}`.trim() === "";
 }
 
+/** Mirrors util.IsEmailDomainAllowed on the backend: empty list allows any domain. */
+function isEmailDomainAllowed(email: string, allowedDomains?: string[]): boolean {
+  if (!allowedDomains || allowedDomains.length === 0) {
+    return true;
+  }
+  const domain = email.slice(email.lastIndexOf("@") + 1).toLowerCase();
+  if (!domain) {
+    return false;
+  }
+  return allowedDomains.some((entry) => {
+    const normalized = entry?.trim().toLowerCase().replace(/^@+/, "") ?? "";
+    return normalized !== "" && normalized === domain;
+  });
+}
+
 /** One item's error message, or "" when it is fine. */
 export function validateSignupItem(item: any, values: Record<string, any>, application: any): string {
   // a "Text N" item is decoration, it edits nothing
@@ -110,6 +125,9 @@ export function validateSignupItem(item: any, values: Record<string, any>, appli
     }
     if (!isBlank(value) && item.regex && !new RegExp(item.regex).test(value)) {
       return i18next.t("signup:The input Email doesn't match the signup item regex!");
+    }
+    if (!isBlank(value) && !isEmailDomainAllowed(value, application?.organizationObj?.emailDomains)) {
+      return i18next.t("signup:The email domain is not allowed to sign up");
     }
     if (item.rule !== "No verification" && required && isBlank(values.emailCode)) {
       return i18next.t("code:Please input your verification code!");

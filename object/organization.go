@@ -77,6 +77,7 @@ type Organization struct {
 	DefaultTokenFields     []string   `xorm:"varchar(1000)" json:"defaultTokenFields"`
 	UserTypes              []string   `xorm:"mediumtext" json:"userTypes"`
 	Tags                   []string   `xorm:"mediumtext" json:"tags"`
+	EmailDomains           []string   `xorm:"mediumtext" json:"emailDomains"`
 	Languages              []string   `xorm:"varchar(255)" json:"languages"`
 	ThemeData              *ThemeData `xorm:"json" json:"themeData"`
 	MasterPassword         string     `xorm:"varchar(200)" json:"masterPassword"`
