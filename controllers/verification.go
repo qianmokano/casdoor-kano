@@ -351,6 +351,11 @@ func (c *ApiController) SendVerificationCode() {
 			return
 		}
 
+		if vform.Method == SignupVerification && !util.IsEmailDomainAllowed(vform.Dest, organization.EmailDomains) {
+			c.ResponseError(c.T("check:The email domain is not allowed to sign up"))
+			return
+		}
+
 		if vform.Method == SignupVerification && object.HasUserByField(organization.Name, "email", strings.ToLower(vform.Dest)) {
 			c.ResponseError(c.T("check:Email already exists"))
 			return

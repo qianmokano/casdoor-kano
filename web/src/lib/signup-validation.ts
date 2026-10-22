@@ -59,7 +59,7 @@ function isBlank(value: any): boolean {
 }
 
 /** Mirrors util.IsEmailDomainAllowed on the backend: empty list allows any domain. */
-function isEmailDomainAllowed(email: string, allowedDomains?: string[]): boolean {
+export function isEmailDomainAllowed(email: string, allowedDomains?: string[]): boolean {
   if (!allowedDomains || allowedDomains.length === 0) {
     return true;
   }
