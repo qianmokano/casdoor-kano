@@ -37,11 +37,7 @@ jobs:
 
   portal:
     needs: release-config
-    # ubuntu-24.04, not latest (26): the cypress action's wait-on uses got@11,
-    # which dies on Node 24 ("Socket closed before the connection was
-    # established", cypress-io/github-action#1873) and the 26 image forces
-    # Node 24 on actions. Unpin once the action ships a Node-24-safe wait-on.
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
@@ -89,17 +85,31 @@ jobs:
             sleep 1
           done
           python3 deploy/test_portal.py
+      # The dev server is started here instead of via the cypress action's
+      # start/wait-on inputs: the action's wait-on uses got@11, which dies
+      # instantly under the runner's forced Node 24 ("Socket closed before
+      # the connection was established", cypress-io/github-action#1873).
+      # Revert once the action ships a Node-24-safe wait-on.
+      - name: Start frontend dev server for cypress
+        working-directory: web
+        run: |
+          nohup yarn start -- --host 127.0.0.1 > /tmp/vite-dev.log 2>&1 &
+          for i in {1..60}; do
+            if curl -fsS http://127.0.0.1:7001 > /dev/null; then
+              echo "vite dev server is up"
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "vite dev server failed to start"
+          cat /tmp/vite-dev.log
+          exit 1
       - uses: cypress-io/github-action@v6
         env:
           CASDOOR_BACKEND: http://localhost:8011
         with:
           working-directory: web
           install: false
-          # 127.0.0.1, not localhost: on the Ubuntu 26 runner image the
-          # `localhost` name resolves IPv6-first, so wait-on fails the step
-          # with "Socket closed before the connection was established"
-          start: yarn start -- --host 127.0.0.1
-          wait-on: http://127.0.0.1:7001
           browser: chrome
           spec: cypress/e2e/kano-portal.cy.js,cypress/e2e/login.cy.js
       - name: Save test evidence
