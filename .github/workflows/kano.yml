@@ -93,14 +93,16 @@ jobs:
       - name: Start frontend dev server for cypress
         # vite.config.ts reads CASDOOR_BACKEND for its /api proxy target; the
         # cypress action used to inject it into its own `start` command, so the
-        # manual start has to pass it explicitly (port 8011, set above).
+        # manual start has to pass it explicitly (port 8011, set above). The
+        # browser side must stay on `localhost`: the OIDC redirect test fails
+        # when the page origin becomes 127.0.0.1 (verified locally).
         env:
           CASDOOR_BACKEND: http://127.0.0.1:8011
         working-directory: web
         run: |
-          nohup yarn start -- --host 127.0.0.1 > /tmp/vite-dev.log 2>&1 &
+          nohup yarn start > /tmp/vite-dev.log 2>&1 &
           for i in {1..60}; do
-            if curl -fsS http://127.0.0.1:7001 > /dev/null; then
+            if curl -fsS http://localhost:7001 > /dev/null; then
               echo "vite dev server is up"
               exit 0
             fi
