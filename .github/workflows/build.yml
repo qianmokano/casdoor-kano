@@ -171,6 +171,11 @@ jobs:
       # the connection was established", cypress-io/github-action#1873).
       # Revert once the action ships a Node-24-safe wait-on.
       - name: Start frontend dev server for cypress
+        # vite.config.ts reads CASDOOR_BACKEND for its /api proxy target; pass
+        # it explicitly since the dev server no longer inherits the cypress
+        # action's environment. Port 8000 is the backend started above.
+        env:
+          CASDOOR_BACKEND: http://127.0.0.1:8000
         working-directory: ./web
         run: |
           nohup yarn start -- --host 127.0.0.1 > /tmp/vite-dev.log 2>&1 &

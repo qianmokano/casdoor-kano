@@ -279,7 +279,7 @@ describe("Kano customer portal", () => {
     }).as("oidcLogin");
     cy.intercept("GET", "**/__kano-callback*", {statusCode: 200, headers: {"content-type": "text/html"}, body: "<p>OIDC callback</p>"});
     const query = new URLSearchParams({client_id: "local-client", response_type: "code", scope: "openid profile email",
-      redirect_uri: "http://localhost:7001/__kano-callback", state: "state-with-context",
+      redirect_uri: "http://127.0.0.1:7001/__kano-callback", state: "state-with-context",
       code_challenge: "test-pkce-challenge", code_challenge_method: "S256"});
     visit(`/login/oauth/authorize?${query}`);
     cy.get("#username").type("portal-demo");
