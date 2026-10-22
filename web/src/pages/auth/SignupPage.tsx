@@ -26,7 +26,7 @@ import * as Util from "@/auth/Util";
 import * as ApplicationBackend from "@/backend/ApplicationBackend";
 import * as InvitationBackend from "@/backend/InvitationBackend";
 import * as AuthBackend from "@/backend/AuthBackend";
-import {getSignupItemField, validateSignupItems} from "@/lib/signup-validation";
+import {getSignupItemField, isEmailDomainAllowed, validateSignupItems} from "@/lib/signup-validation";
 import * as Setting from "@/lib/setting";
 import {cn} from "@/lib/utils";
 
@@ -358,6 +358,9 @@ export default function SignupPage({application: applicationProp}: {application?
           onChange={(e) => set("email", e.target.value)}
         />
         {fieldError("email")}
+        {Setting.isValidEmail(values.email ?? "") && !isEmailDomainAllowed(values.email ?? "", application?.organizationObj?.emailDomains) ? (
+          <p className="text-xs text-destructive">{i18next.t("signup:The email domain is not allowed to sign up")}</p>
+        ) : null}
       </div>
       {item.rule !== "No verification" ? (
         <div className="signup-email-code space-y-2">
@@ -369,7 +372,8 @@ export default function SignupPage({application: applicationProp}: {application?
             method="signup"
             destType="email"
             dest={values.email ?? ""}
-            disabled={!Setting.isValidEmail(values.email ?? "")}
+            disabled={!Setting.isValidEmail(values.email ?? "") ||
+              !isEmailDomainAllowed(values.email ?? "", application?.organizationObj?.emailDomains)}
             application={application}
             applicationId={Setting.getApplicationName(application)}
           />
